@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./docker/node/Dockerfile
+    ports:
+     - "3000:3000"
+    volumes:
+     - ./frontend/app:/usr/src/app
+    command: npm start
+    environment:
+     - CHOKIDAR_USEPOLLING=true
+    tty: true
+  backend:
+    env_file: ./.env
+    build:
+      context: ./backend
+      dockerfile: ./docker/python/Dockerfile
+    ports:
+     - "8000:8000"
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+     - ./backend:/backend
+    tty: true
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
