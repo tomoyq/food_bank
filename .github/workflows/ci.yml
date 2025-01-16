@@ -55,7 +55,9 @@ jobs:
           pip install -r requirements.txt
       - name: Debug environment
         run: |
-          ls
-          pip list
+          which python3
+          which pip
+          python3 --version
+          pip --version
       - name: test
         run: python3 manage.py test
