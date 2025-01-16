@@ -58,6 +58,6 @@ jobs:
       - name: Debug environment
         run: |
           ls
-          
+          pip list
       # - name: test
       #   run: python3 manage.py test
