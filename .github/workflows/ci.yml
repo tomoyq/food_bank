@@ -1,0 +1,75 @@
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+    types: [opened, synchronize, closed]
+      
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          frontend:
+            - './frontend/**'
+          backend:
+            - './backend/**'
+
+  frontend:
+    needs: changes
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+
+    runs-on: ubuntu-latest
+    container: node:20.10.0-buster-slim
+
+    defaults:
+      run:
+        working-directory: ./frontend/app
+
+    steps:
+      - name: check out repositry
+      - uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: install 
+        run: npm install
+
+      - name: test
+        run: npm run test 
+
+  backend:
+    needs: changes
+    if: ${{ needs.changes.outputs.backend == 'true' }}
+
+    runs-on: ubuntu-latest
+    container: node:20.10.0-buster-slim
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: check out repositry
+      - uses: actions/checkout@v4
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: install 
+        run: pip install -r requirements.txt
+
+      - name: test
+        run: python manage.py test
