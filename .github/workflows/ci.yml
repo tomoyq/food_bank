@@ -3,12 +3,41 @@ on:
     branches:
       - develop
       - master
+      types: [opened, reopened, synchronize]
+
+env:
+  SECRET_KEY: test
+  ALLOWED_HOSTS: 127.0.0.1
+  # "True"にしないとDEBUG内がFalseになってしまう
+  DEBUG: "True"
+  POSTGRES_DB: test
+  POSTGRES_USER: test
+  POSTGRES_PASSWORD: test
+  POSTGRES_HOST: 127.0.0.1
       
 jobs:
 
+  # Postgresのサービスコンテナを設定
+  services:
+    db:
+      # PostgresのDocker imageを使用
+      image: postgres:14
+      ports:
+        - 5432:5432
+      env:
+        POSTGRES_NAME: ${{ env.POSTGRES_NAME }}
+        POSTGRES_USER: ${{ env.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+      # Postgresより先にDjangoが起動しないようヘルスチェックを使って起動順を制御
+      options: >-
+        --health-cmd "pg_isready"
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retries 5
+
   frontend:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: node:20.10.0-buster-slim
 
     defaults:
