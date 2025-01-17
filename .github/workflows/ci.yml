@@ -47,17 +47,13 @@ jobs:
         # PostgresのDocker imageを使用
         image: postgres:14
         ports:
-          - 5430:5432
+          - 5432:5432
         env:
-          POSTGRES_NAME: ${{ env.POSTGRES_NAME }}
+          POSTGRES_DB: ${{ env.POSTGRES_NAME }}
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         # Postgresより先にDjangoが起動しないようヘルスチェックを使って起動順を制御
-        options: >-
-          --health-cmd "pg_isready -U test"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     runs-on: ubuntu-22.04
     container:
@@ -86,8 +82,3 @@ jobs:
       
       - name: test
         run: python3 manage.py test
-
-        env:
-          DB_HOST: ${{ env.POSTGRES_HOST }}
-          DB_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          DB_USER: ${{ env.POSTGRES_USER }}
