@@ -1,5 +1,5 @@
 from django.test import TestCase
 
-class TestUrls(TestCase):
-    def test_sample(self):
+class TestUserModel(TestCase):
+    def test_true(self):
         self.assertEqual(1, 1)
