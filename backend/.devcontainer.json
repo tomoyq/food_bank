@@ -3,5 +3,5 @@
     "dockerComposeFile": ["../docker-compose.yml"],
     "service": "backend",
     "shutdownAction": "none",
-    "workspaceFolder": "/workspace/backend"
+    "workspaceFolder": "/backend/"
 }
