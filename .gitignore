@@ -1,5 +1,5 @@
 .env
 backend/api/__pycache__/
 backend/accounts/__pycache__/
-backend/api/tests/__pycache__/
+backend/accounts/tests/__pycache__/
 frontend/app/node_modules/
