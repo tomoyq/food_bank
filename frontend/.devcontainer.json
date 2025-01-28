@@ -3,5 +3,5 @@
     "dockerComposeFile": ["../docker-compose.yml"],
     "service": "frontend",
     "shutdownAction": "none",
-    "workspaceFolder": "/workspace/frontend"
+    "workspaceFolder": "/usr/src/app"
 }

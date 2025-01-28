@@ -1,7 +1,7 @@
 import React from "react"
 
+import { SignInForm } from "../../../features/auth/components/signInForm";
+
 export const Login: React.FC = () => {
-    return (
-        <h1>ログイン画面</h1>
-    )
+    return <SignInForm /> 
 };
