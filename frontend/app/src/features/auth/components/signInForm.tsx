@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Checkbox,
-  CssBaseline,
   FormControlLabel,
   Divider,
   Link,
@@ -67,77 +66,76 @@ export const SignInForm = () => {
 
   return (
     <>
-      <CssBaseline enableColorScheme />
-        <FormContainer >
-          <ContainerLabel>
-            <KitchenOutlinedIcon 
-              color='primary'
-              sx={{
-                fontSize: 50,
-              }}
-            />
-            <Typography
-              component="p"
-              variant="inherit"
-              sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-            >
-              Welcome back to <br/>
-              Smart Fridge Chef
-            </Typography>
-          </ContainerLabel>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
+      <FormContainer >
+        <ContainerLabel>
+          <KitchenOutlinedIcon 
+            color='primary'
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              gap: 2,
+              fontSize: 50,
             }}
+          />
+          <Typography
+            component="p"
+            variant="inherit"
+            sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
           >
-            <AuthFormInput 
-              name='username'
-              placeholder='ユーザー名'
-            />
-            <AuthFormInput 
-              name='password'
-              placeholder='••••••'
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={() => {}}
-            >
-              Sign in
-            </Button>
-          </Box>
-          <ContainerLabel>
+            Welcome back to <br/>
+            Smart Fridge Chef
+          </Typography>
+        </ContainerLabel>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          noValidate
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            gap: 2,
+          }}
+        >
+          <AuthFormInput 
+            name='username'
+            placeholder='ユーザー名'
+          />
+          <AuthFormInput 
+            name='password'
+            placeholder='••••••'
+          />
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            onClick={() => {}}
+          >
+            Sign in
+          </Button>
+        </Box>
+        <ContainerLabel>
+          <Link
+            component="button"
+            type="button"
+            onClick={handleClickOpen}
+            variant="body2"
+          >
+            Forgot your password?
+          </Link>
+          <Divider flexItem>or</Divider>
+          <Typography >
+            Don&apos;t have an account?{' '}
             <Link
-              component="button"
-              type="button"
-              onClick={handleClickOpen}
+              href="/material-ui/getting-started/templates/sign-in/"
               variant="body2"
             >
-              Forgot your password?
+              Sign up
             </Link>
-            <Divider flexItem>or</Divider>
-            <Typography >
-              Don&apos;t have an account?{' '}
-              <Link
-                href="/material-ui/getting-started/templates/sign-in/"
-                variant="body2"
-              >
-                Sign up
-              </Link>
-            </Typography>
-          </ContainerLabel>
-        </FormContainer>
-      </>
+          </Typography>
+        </ContainerLabel>
+      </FormContainer>
+    </>
   );
 }
