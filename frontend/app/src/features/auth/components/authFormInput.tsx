@@ -3,10 +3,11 @@ import {
     FormLabel,
     TextField,
 } from '@mui/material'
+import { FieldError, FieldErrors, FieldValues } from 'react-hook-form';
 
 type FormProps = {
     name: 'username' | 'password';
-    error?: boolean;
+    errors?: FieldError;
     helperText?: string;
     placeholder: string;
 }
@@ -21,7 +22,7 @@ export const AuthFormInput = (props: FormProps) => {
                 }}
             >{props.name}</FormLabel>
             <TextField
-                error={props.error}
+                error={props.errors ? true : false}
                 helperText={props.helperText}
                 id={props.name}
                 type={props.name === 'username' ? 'text' : 'password'}
@@ -32,7 +33,7 @@ export const AuthFormInput = (props: FormProps) => {
                 required
                 fullWidth
                 variant="outlined"
-                color={props.error ? 'error' : 'primary'}
+                color={props.errors ? 'error' : 'primary'}
                 size='small'
             />
         </FormControl>
