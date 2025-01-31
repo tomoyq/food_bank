@@ -3,11 +3,12 @@ import {
     FormLabel,
     TextField,
 } from '@mui/material'
-import { FieldError, FieldErrors, FieldValues } from 'react-hook-form';
+import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 
 type FormProps = {
     name: 'username' | 'password';
     errors?: FieldError;
+    register?: UseFormRegisterReturn
     helperText?: string;
     placeholder: string;
 }
@@ -24,6 +25,7 @@ export const AuthFormInput = (props: FormProps) => {
             <TextField
                 error={props.errors ? true : false}
                 helperText={props.helperText}
+                {...props.register}
                 id={props.name}
                 type={props.name === 'username' ? 'text' : 'password'}
                 name={props.name}
