@@ -3,41 +3,43 @@ import {
     FormLabel,
     TextField,
 } from '@mui/material'
-import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
+import { Control, Controller} from 'react-hook-form';
+import { z } from 'zod';
+
+import {SignInFormSchema} from '../../../zod/authFormSchema'
 
 type FormProps = {
     name: 'username' | 'password';
-    errors?: FieldError;
-    register?: UseFormRegisterReturn
+    control?: Control<z.infer<typeof SignInFormSchema>>;
     helperText?: string;
     placeholder: string;
 }
 
 export const AuthFormInput = (props: FormProps) => {
     return (
-        <FormControl>
-            <FormLabel
-                htmlFor={props.name}
-                sx={{
-                    fontWeight: 'bold',
-                }}
-            >{props.name}</FormLabel>
-            <TextField
-                error={props.errors ? true : false}
-                helperText={props.helperText}
-                {...props.register}
-                id={props.name}
-                type={props.name === 'username' ? 'text' : 'password'}
+        <>
+            <Controller
                 name={props.name}
-                placeholder={props.placeholder}
-                autoComplete={props.name === 'username' ? 'name' : 'current-password'}
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={props.errors ? 'error' : 'primary'}
-                size='small'
+                control={props.control}
+                render={({field, fieldState}) => {
+                    return(
+                        <TextField
+                            helperText={props.helperText}
+                            id={field.name}
+                            type={field.name === 'username' ? 'text' : 'password'}
+                            name={field.name}
+                            placeholder={props.placeholder}
+                            autoComplete={field.name === 'username' ? 'name' : 'current-password'}
+                            autoFocus
+                            required
+                            fullWidth
+                            variant="outlined"
+                            color={fieldState.error ? 'error' : 'primary'}
+                            size='small'
+                        />
+                    )
+                }}
             />
-        </FormControl>
+        </>
     )
 };

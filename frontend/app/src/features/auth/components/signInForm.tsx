@@ -11,8 +11,13 @@ import {
 } from '@mui/material';
 import KitchenOutlinedIcon from '@mui/icons-material/KitchenOutlined';
 import styled from '@emotion/styled'
+import { z } from 'zod';
 
+import {SignInFormData, SignInFormSchema} from '../../../zod/authFormSchema'
 import { AuthFormInput } from './authFormInput';
+import { RHFInput } from './RHFInput';
+import { useSignInForm } from '../hooks/useSignInForm';
+import { SubmitHandler } from 'react-hook-form';
 
 const FormContainer = styled.div`
   width: 25%;
@@ -38,11 +43,17 @@ const ContainerLabel = styled.div`
 `
 
 export const SignInForm = () => {
+  const {control, handleSubmit} = useSignInForm()
+
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
+
+  const onSubmit: SubmitHandler<SignInFormData> = (data: SignInFormData) => {
+    console.log(data);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -50,18 +61,6 @@ export const SignInForm = () => {
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handleSubmit = (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
   };
 
   return (
@@ -85,7 +84,7 @@ export const SignInForm = () => {
         </ContainerLabel>
         <Box
           component="form"
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           noValidate
           sx={{
             display: 'flex',
@@ -94,12 +93,14 @@ export const SignInForm = () => {
             gap: 2,
           }}
         >
-          <AuthFormInput 
+          <RHFInput 
             name='username'
+            control={control}
             placeholder='ユーザー名'
           />
-          <AuthFormInput 
+          <RHFInput 
             name='password'
+            control={control}
             placeholder='••••••'
           />
           <FormControlLabel
@@ -110,7 +111,6 @@ export const SignInForm = () => {
             type="submit"
             fullWidth
             variant="contained"
-            onClick={() => {}}
           >
             Sign in
           </Button>
