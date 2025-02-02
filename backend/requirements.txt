@@ -2,4 +2,5 @@ Django==5.1.5
 djangorestframework
 psycopg2-binary
 djangorestframework-simplejwt
+django-cors-headers
 datetime
