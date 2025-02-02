@@ -1,6 +1,7 @@
 import React from "react";
 import { CssBaseline } from "@mui/material"
 import { ThemeProvider } from '@mui/material/styles'
+import { ThemeProvider as EmotionThemeProvider } from '@emotion/react'
 
 import { AuthContextProvider } from "./context/AuthContext";
 import { AxiosProvider } from "./axios/AxiosProvider";
@@ -15,8 +16,10 @@ export const AppProvider: React.FC<Props> = ({children}) => {
             <AuthContextProvider>
                 <AxiosProvider>
                     <ThemeProvider theme={theme}>
-                        <CssBaseline enableColorScheme />
-                        {children}
+                        <EmotionThemeProvider theme={theme}>
+                            <CssBaseline enableColorScheme />
+                            {children}
+                        </EmotionThemeProvider>
                     </ThemeProvider>
                 </AxiosProvider>
             </AuthContextProvider>

@@ -35,7 +35,7 @@ export const RHFInput = (props: FormProps) => {
             >{field.name}</FormLabel>
             <TextField
                 {...field}
-                error={errors? true : false}
+                error={errorMessage? true : false}
                 helperText={errorMessage}
                 id={field.name}
                 type={field.name === 'username' ? 'text' : 'password'}
@@ -45,7 +45,7 @@ export const RHFInput = (props: FormProps) => {
                 autoFocus
                 fullWidth
                 variant="outlined"
-                color={errors ? 'error' : 'primary'}
+                color='secondary'
                 size='small'
             />
         </>

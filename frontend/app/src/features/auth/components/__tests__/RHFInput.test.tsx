@@ -12,7 +12,7 @@ test("propsに渡されたnameがinputのid属性になる", async () => {
                 control={control}
                 placeholder="名前"
             />);
-  
+        
     //nameにusernameを渡しているためidにはusernameが表示されるはず
     const input = screen.getByRole('textbox') as HTMLElement;
     expect(input.id).toBe('username');

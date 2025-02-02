@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 
-import App from "../App";
+import { FridgeContent } from "./routes/app/fridgeContent";
 import {Login} from "./routes/auth/login"
 
 export const AppRouter = () => {
@@ -8,7 +8,7 @@ export const AppRouter = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route index element={<App />} />
+                <Route index element={<FridgeContent />} />
                 <Route path="login" element={<Login />} />
             </Routes>
         </BrowserRouter>
