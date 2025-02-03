@@ -11,6 +11,7 @@ const CustomButton = (props: ButtonProps) => {
     return (
         <Button 
             type="submit"
+            aria-label='submit'
             color='secondary'
             fullWidth={props.fullWidth}
             variant={props.variant}

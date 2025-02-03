@@ -57,12 +57,12 @@ export const SignInForm = () => {
       navigate('/');
     })
     .catch((e) => {
-      console.log(e)
+      console.log(e.response)
 
       //サーバーエラーの内容を表示させる
       setError('root.serverError', {
         type: 'serverErrror',
-        message: e.message
+        message: e.response.data.detail
       })
     })
   };
