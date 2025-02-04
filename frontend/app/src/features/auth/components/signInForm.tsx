@@ -1,8 +1,6 @@
-import * as React from 'react';
-
+import axios from 'axios';
 import {
   Box,
-  Button,
   Checkbox,
   FormControlLabel,
   Divider,
@@ -11,8 +9,16 @@ import {
 } from '@mui/material';
 import KitchenOutlinedIcon from '@mui/icons-material/KitchenOutlined';
 import styled from '@emotion/styled'
+import { SubmitHandler } from 'react-hook-form';
+import { useNavigate } from 'react-router';
+import { useContext } from 'react';
 
-import { AuthFormInput } from './authFormInput';
+import { SignInFormData } from '../../../zod/authFormSchema'
+import { RHFInput } from './RHFInput';
+import { useSignInForm } from '../hooks/useSignInForm';
+import { AuthContext } from '../../../app/context/AuthContext';
+
+import { CustomButton } from '../../../components/ui';
 
 const FormContainer = styled.div`
   width: 25%;
@@ -20,6 +26,7 @@ const FormContainer = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  background-color: #FFFFFF;
   border: solid 1px #DDDDDD;
   border-radius: 20px;
   padding: 50px;
@@ -38,30 +45,26 @@ const ContainerLabel = styled.div`
 `
 
 export const SignInForm = () => {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+  const {setLoggedIn} = useContext(AuthContext);
+  const {control, handleSubmit, setError, errors} = useSignInForm();
+  const navigate = useNavigate()
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const onSubmit: SubmitHandler<SignInFormData> = (data: SignInFormData) => {
+    axios.post('/login/', data)
+    .then(() => {
+      //ログイン状態にする
+      setLoggedIn(prevstate => !prevstate);
+      navigate('/');
+    })
+    .catch((e) => {
+      console.log(e.response)
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleSubmit = (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+      //サーバーエラーの内容を表示させる
+      setError('root.serverError', {
+        type: 'serverErrror',
+        message: e.response.data.detail
+      })
+    })
   };
 
   return (
@@ -82,10 +85,19 @@ export const SignInForm = () => {
             Welcome back to <br/>
             Smart Fridge Chef
           </Typography>
+          {errors.root?.serverError &&
+            <Typography
+              component="p"
+              variant="inherit"
+              color='error'
+            >
+              {errors.root?.serverError.message}
+            </Typography>
+          }
         </ContainerLabel>
         <Box
           component="form"
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           noValidate
           sx={{
             display: 'flex',
@@ -94,32 +106,31 @@ export const SignInForm = () => {
             gap: 2,
           }}
         >
-          <AuthFormInput 
+          <RHFInput 
             name='username'
+            control={control}
             placeholder='ユーザー名'
           />
-          <AuthFormInput 
+          <RHFInput 
             name='password'
+            control={control}
             placeholder='••••••'
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
-          <Button
-            type="submit"
-            fullWidth
+          <CustomButton
+            text="Sign in"
+            fullWidth={true}
             variant="contained"
-            onClick={() => {}}
-          >
-            Sign in
-          </Button>
+          />
         </Box>
         <ContainerLabel>
           <Link
             component="button"
             type="button"
-            onClick={handleClickOpen}
+            onClick={() => {}}
             variant="body2"
           >
             Forgot your password?

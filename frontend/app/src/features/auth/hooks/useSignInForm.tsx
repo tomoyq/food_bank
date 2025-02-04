@@ -1,17 +1,19 @@
-import axios from 'axios';
 import { useForm } from 'react-hook-form'; 
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import {SignInFormSchema} from '../../../zod/authFormSchema'
+import {SignInFormData, SignInFormSchema} from '../../../zod/authFormSchema'
 
 export const useSignInForm = () => {
     const {
-        register,
+        control,
         handleSubmit,
-        formState: { errors },
-      } = useForm({
+        setError,
+        formState: {errors}
+      } = useForm<SignInFormData>({
         resolver: zodResolver(SignInFormSchema),
+        criteriaMode: 'all',
+        mode: 'onChange',
       });
 
-    return {register, handleSubmit, formState: { errors },}
+    return {control, handleSubmit, setError, errors}
 };
