@@ -1,24 +1,22 @@
 import '@testing-library/jest-dom'
-import { SignInForm } from "../signInForm";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { useNavigate } from "react-router";
 import userEvent from '@testing-library/user-event';
+
+import { SignInForm } from "../signInForm";
+import { AuthContextProvider } from "../../../../app/context/AuthContext"
 
 const errorResponce = {
     detail: 'サーバーエラーです'
 };
 
-// const successMock = new MockAdapter(axios);
-// successMock.onPost(`http://localhost:8000/login`).reply(200);
-
-
 const mockedNavigator = jest.fn();
-jest.mock('react-router', () => ({
-    ...jest.requireActual('react-router'),
-    useNavigate: () => mockedNavigator,
-}));
+    jest.mock('react-router', () => ({
+        ...jest.requireActual('react-router'),
+        useNavigate: () => mockedNavigator,
+    }
+));
 
 describe('ログインフォーム', () => {
     
@@ -27,7 +25,7 @@ describe('ログインフォーム', () => {
     });
 
     const setUp = () => {
-        render(<SignInForm />);
+        render(<SignInForm />, {wrapper: AuthContextProvider});
         const usernameInput = screen.getByRole('textbox',{name:'username'}) as HTMLElement;
         const passwordInput = screen.getByLabelText('password') as HTMLElement;
         const submitButton = screen.getByRole('button',{name:'submit'});
@@ -47,7 +45,7 @@ describe('ログインフォーム', () => {
         const { submitButton } = setUp();
         userEvent.click(submitButton);
         await waitFor(() => {
-            const requiredElement = screen.getAllByText('Required');
+            const requiredElement = screen.getAllByText('必須項目です。');
             //フォーム欄は2つのため
             expect(requiredElement.length).toEqual(2);          
         });
@@ -58,7 +56,7 @@ describe('ログインフォーム', () => {
         fireEvent.change(passwordInput, { target: { value: 'pass' } });
         fireEvent.blur(passwordInput);
         await waitFor(() => {
-            expect(screen.getByText('パスワードは8文字以上で必須項目です。')).toBeInTheDocument();
+            expect(screen.getByText('パスワードは8文字以上入力してください。')).toBeInTheDocument();
         });
     });
 
@@ -95,6 +93,25 @@ describe('ログインフォーム', () => {
 
         await waitFor(() => {
             expect(screen.getByText('サーバーエラーです')).toBeInTheDocument();
+        });
+    });
+
+    test('ログインに成功した時はuseNavigateが呼ばれる', async () => {
+        const successMock = new MockAdapter(axios);
+        successMock.onPost(`/login/`).reply(200);
+
+        const { usernameInput, passwordInput, submitButton } = setUp();
+        fireEvent.change(usernameInput, { target: { value: 'test' } });
+        fireEvent.blur(usernameInput);
+
+        fireEvent.change(passwordInput, { target: { value: 'password' } });
+        fireEvent.blur(passwordInput); 
+
+        userEvent.click(submitButton);
+
+        await waitFor(() => {
+            // "/" を引数にnavigatorが呼び出される
+            expect(mockedNavigator).toHaveBeenCalledWith('/');
         });
     });
 })
