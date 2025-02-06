@@ -2,36 +2,33 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import KitchenOutlinedIcon from '@mui/icons-material/KitchenOutlined';
+import { useNavigate } from 'react-router';
 
-const pages: any[] = ['Products', 'Pricing', 'Blog'];
+import { CustomIconButton } from "../../ui/"
+
+const pages: [string, any, string][] = [['食材在庫', <KitchenOutlinedIcon />, '/']];
 
 export const Header = () => {
+  const navigate = useNavigate();
+
+  const onClickNav = (path: string) => {
+    navigate(path);
+  };
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
   };
 
   return (
@@ -71,19 +68,13 @@ export const Header = () => {
             >
               LOGO
             </Typography>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
+
+            <CustomIconButton 
+              type='menu'
+              children={<MenuIcon />}
+              controls={'menu-appbar'}
               onClick={handleOpenNavMenu}
-              color="inherit"
-              sx={{
-                display: 'inline',
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
+            />
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
@@ -101,8 +92,8 @@ export const Header = () => {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                <MenuItem key={page[0]} onClick={handleCloseNavMenu}>
+                  <Typography sx={{ textAlign: 'center' }}>{page[0]}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -110,13 +101,12 @@ export const Header = () => {
 
           <Box sx={{ display: { xs: 'none', md: 'flex' }}}>
             {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
+              <CustomIconButton 
+                type='nav'
+                children={page[1]}
+                path={page[2]}
+                onClick={onClickNav}
+              />
             ))}
           </Box>
         </Toolbar>
