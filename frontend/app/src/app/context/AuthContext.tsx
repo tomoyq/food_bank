@@ -5,7 +5,7 @@ type Props = {
 };
 
 export const AuthContext = createContext({} as {
-    loggedIn:boolean; 
+    loggedIn: boolean; 
     setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 });
 

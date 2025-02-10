@@ -8,11 +8,21 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import MenuItem from '@mui/material/MenuItem';
 import KitchenOutlinedIcon from '@mui/icons-material/KitchenOutlined';
+import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
+import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
+import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
+
 import { useNavigate } from 'react-router';
 
 import { CustomIconButton } from "../../ui/"
 
-const pages: [string, any, string][] = [['食材在庫', <KitchenOutlinedIcon />, '/']];
+//{ページ名、アイコン、遷移先ルート}オブジェクトを表示したいページ分持つ
+const pages: {name: string, icon: any, root: string, ariaLabel: string}[] = [
+  {name: '食材在庫',icon: <KitchenOutlinedIcon />, root: '/', ariaLabel: 'content'},
+  {name: 'レシピ検索',icon: <PlagiarismOutlinedIcon />, root: '/recipe', ariaLabel: 'recipe'},
+  {name: 'プロフィール',icon: <AccountBoxOutlinedIcon />, root: '/profile', ariaLabel: 'profile'},
+  {name: 'メッセージ',icon: <MailOutlineOutlinedIcon />, root: '/message', ariaLabel: 'message'},
+];
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -92,8 +102,8 @@ export const Header = () => {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page[0]} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{page[0]}</Typography>
+                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                  <Typography sx={{ textAlign: 'center' }}>{page.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -103,9 +113,10 @@ export const Header = () => {
             {pages.map((page) => (
               <CustomIconButton 
                 type='nav'
-                children={page[1]}
-                path={page[2]}
+                children={page.icon}
+                path={page.root}
                 onClick={onClickNav}
+                ariaLabel={page.ariaLabel}
               />
             ))}
           </Box>
