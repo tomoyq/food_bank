@@ -16,6 +16,7 @@ interface Navigate {
     onClick: ((key: string) => void);
     //useNavigateと使うときに遷移先を指定するのに使う
     path: string;
+    ariaLabel: string;
 }
 
 
@@ -37,6 +38,7 @@ const CustomIconButton: React.FC<OpenMenu | Navigate> = (props) => {
                 size="large"
                 onClick={() => props.onClick(props.path)}
                 color="inherit"
+                aria-label={props.ariaLabel}
             >
                 {props.children}
             </IconButton>
