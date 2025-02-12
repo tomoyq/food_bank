@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../../../app/context/AuthContext';
 
 const FridgeContent: React.FC = () => {
-    const loggedIn = useContext(AuthContext);
+    const {loggedIn} = useContext(AuthContext);
     
     console.log(loggedIn);
 

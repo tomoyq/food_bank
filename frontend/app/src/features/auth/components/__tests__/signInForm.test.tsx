@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import userEvent from '@testing-library/user-event';
 
 import { SignInForm } from "../signInForm";
 import { AuthContextProvider } from "../../../../app/context/AuthContext"
+import { customAxios } from '../../../../app/axios/AxiosProvider';
 
 const errorResponce = {
     detail: 'サーバーエラーです'
@@ -79,7 +79,7 @@ describe('ログインフォーム', () => {
     });
 
     test('ログインに失敗した時はサーバー側のエラーメッセージが表示される', async () => {
-        const errorMock = new MockAdapter(axios);
+        const errorMock = new MockAdapter(customAxios);
         errorMock.onPost(`/login/`).reply(401, errorResponce);
 
         const { usernameInput, passwordInput, submitButton } = setUp();
@@ -97,7 +97,7 @@ describe('ログインフォーム', () => {
     });
 
     test('ログインに成功した時はuseNavigateが呼ばれる', async () => {
-        const successMock = new MockAdapter(axios);
+        const successMock = new MockAdapter(customAxios);
         successMock.onPost(`/login/`).reply(200);
 
         const { usernameInput, passwordInput, submitButton } = setUp();
