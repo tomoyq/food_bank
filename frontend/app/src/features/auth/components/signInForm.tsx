@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   Box,
   Checkbox,
@@ -19,6 +18,7 @@ import { useSignInForm } from '../hooks/useSignInForm';
 import { AuthContext } from '../../../app/context/AuthContext';
 
 import { CustomButton } from '../../../components/ui';
+import { customAxios } from '../../../app/axios/AxiosProvider';
 
 const FormContainer = styled.div`
   width: 25%;
@@ -50,10 +50,10 @@ export const SignInForm = () => {
   const navigate = useNavigate()
 
   const onSubmit: SubmitHandler<SignInFormData> = (data: SignInFormData) => {
-    axios.post('/login/', data)
+    customAxios.post('/login/', data)
     .then(() => {
       //ログイン状態にする
-      setLoggedIn(prevstate => !prevstate);
+      setLoggedIn(true);
       navigate('/');
     })
     .catch((e) => {
