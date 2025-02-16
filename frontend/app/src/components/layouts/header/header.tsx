@@ -11,10 +11,12 @@ import KitchenOutlinedIcon from '@mui/icons-material/KitchenOutlined';
 import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
+import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined';
 
 import { useNavigate } from 'react-router';
 
 import { CustomIconButton } from "../../ui/"
+import { AuthContext } from "../../../app/context/AuthContext";
 
 //{ページ名、アイコン、遷移先ルート}オブジェクトを表示したいページ分持つ
 const pages: {name: string, icon: any, root: string, ariaLabel: string}[] = [
@@ -22,13 +24,20 @@ const pages: {name: string, icon: any, root: string, ariaLabel: string}[] = [
   {name: 'レシピ検索',icon: <PlagiarismOutlinedIcon />, root: '/recipe', ariaLabel: 'recipe'},
   {name: 'プロフィール',icon: <AccountBoxOutlinedIcon />, root: '/profile', ariaLabel: 'profile'},
   {name: 'メッセージ',icon: <MailOutlineOutlinedIcon />, root: '/message', ariaLabel: 'message'},
+  {name: 'ログアウト',icon: <ExitToAppOutlinedIcon />, root: '/logout', ariaLabel: 'logout'},
 ];
 
 export const Header = () => {
+  const {loggedIn, logout} = React.useContext(AuthContext);
   const navigate = useNavigate();
 
   const onClickNav = (path: string) => {
-    navigate(path);
+    //pathがlogoutならログアウトさせる
+    if (path === "/logout"){
+      logout();
+    } else {
+      navigate(path);
+    }
   };
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -113,6 +122,7 @@ export const Header = () => {
             {pages.map((page) => (
               <CustomIconButton 
                 type='nav'
+                key={page.name}
                 children={page.icon}
                 path={page.root}
                 onClick={onClickNav}

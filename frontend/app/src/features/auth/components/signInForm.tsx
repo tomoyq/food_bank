@@ -10,7 +10,7 @@ import KitchenOutlinedIcon from '@mui/icons-material/KitchenOutlined';
 import styled from '@emotion/styled'
 import { SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
 import { SignInFormData } from '../../../zod/authFormSchema'
 import { RHFInput } from './RHFInput';
@@ -45,7 +45,7 @@ const ContainerLabel = styled.div`
 `
 
 export const SignInForm = () => {
-  const {setLoggedIn} = useContext(AuthContext);
+  const {loggedIn, setLoggedIn} = useContext(AuthContext);
   const {control, handleSubmit, setError, errors} = useSignInForm();
   const navigate = useNavigate()
 
@@ -66,6 +66,13 @@ export const SignInForm = () => {
       })
     })
   };
+
+  useEffect(() => {
+    //ログイン済みならhomeへリダイレクト
+    if (loggedIn){
+      navigate('/');
+    };
+  }, [loggedIn]);
 
   return (
     <>

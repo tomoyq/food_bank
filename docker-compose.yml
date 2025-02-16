@@ -1,4 +1,15 @@
 services:
+  https-portal:
+    image: steveltn/https-portal:1
+    ports:
+      - '80:80'
+      - '4443:443'
+    environment:
+      DOMAINS: 'localhost -> http://backend:8000'
+      STAGE: local
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   db:
     image: postgres:14
     environment:
