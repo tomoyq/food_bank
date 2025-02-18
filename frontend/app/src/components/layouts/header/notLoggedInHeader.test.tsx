@@ -1,9 +1,10 @@
 import '@testing-library/jest-dom'
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from '@testing-library/user-event';
+import MockAdapter from "axios-mock-adapter";
 
 import { Header } from './header';
-import { AuthContextProvider } from "../../../app/context/AuthContext"
+import { customAxios } from '../../../app/axios/AxiosProvider';
 
 const mockedNavigator = jest.fn();
     jest.mock('react-router', () => ({
@@ -12,31 +13,43 @@ const mockedNavigator = jest.fn();
     }
 ));
 
-describe('ヘッダー', () => {
+const axiosMock = new MockAdapter(customAxios);
+    axiosMock.onPost(`/logout/`).reply(200);
+
+jest.mock('../../../app/context/AuthContext', () => {
+    const originalModule = jest.requireActual('../../../app/context/AuthContext');
+    return {
+        __esModule: true,
+        ...originalModule,
+        AuthContext: {
+            _currentValue: { loggedIn: false },
+        },
+    };
+});
+
+describe('未ログイン状態のヘッダー', () => {
     
     afterEach(() => {
         jest.clearAllMocks();
     });
 
     const setUp = () => {
-        render(<Header />, {wrapper: AuthContextProvider});
+        render(<Header />);
         const contentButton = screen.getByRole('button',{name:'content'});
         const recipeButton = screen.getByRole('button',{name:'recipe'});
-        const profileButton = screen.getByRole('button',{name:'profile'});
-        const messageButton = screen.getByRole('button',{name:'message'});
-        return { contentButton, recipeButton, profileButton, messageButton };
+        const logInButton = screen.getByRole('button',{name:'login'});
+        return { contentButton, recipeButton, logInButton };
     }
 
     test('各要素が正しく読み込まれる', () => {
-        const { contentButton, recipeButton, profileButton, messageButton } = setUp();
+        const { contentButton, recipeButton, logInButton } = setUp();
         expect(contentButton).toBeInTheDocument();
         expect(recipeButton).toBeInTheDocument();
-        expect(profileButton).toBeInTheDocument();
-        expect(messageButton).toBeInTheDocument();
+        expect(logInButton).toBeInTheDocument();
     });
 
     test('各ボタンを押すと設定されたルートに遷移する', async () => {
-        const { contentButton, recipeButton, profileButton, messageButton } = setUp();
+        const { contentButton, recipeButton, logInButton } = setUp();
         
         //食材在庫ページへ
         userEvent.click(contentButton);
@@ -49,15 +62,10 @@ describe('ヘッダー', () => {
         await waitFor(() => {
             expect(mockedNavigator).toHaveBeenCalledWith('/recipe');
         });
-        //プロフィールページへ
-        userEvent.click(profileButton);
+        //ログインページへ
+        userEvent.click(logInButton);
         await waitFor(() => {
-            expect(mockedNavigator).toHaveBeenCalledWith('/profile');
-        });
-        //メッセージページへ
-        userEvent.click(messageButton);
-        await waitFor(() => {
-            expect(mockedNavigator).toHaveBeenCalledWith('/message');
+            expect(mockedNavigator).toHaveBeenCalledWith('/login');
         });
     });
 })
