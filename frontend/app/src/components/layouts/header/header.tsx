@@ -12,24 +12,43 @@ import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
 import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined';
+import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 
 import { useNavigate } from 'react-router';
 
 import { CustomIconButton } from "../../ui/"
 import { AuthContext } from "../../../app/context/AuthContext";
 
+type Pages = {
+  name: string,
+  icon: any,
+  root: string,
+  ariaLabel: string
+}[]
+
 //{ページ名、アイコン、遷移先ルート}オブジェクトを表示したいページ分持つ
-const pages: {name: string, icon: any, root: string, ariaLabel: string}[] = [
+//ログイン済みの時に表示するアイコン
+const logggedInPages: Pages = [
   {name: '食材在庫',icon: <KitchenOutlinedIcon />, root: '/', ariaLabel: 'content'},
   {name: 'レシピ検索',icon: <PlagiarismOutlinedIcon />, root: '/recipe', ariaLabel: 'recipe'},
   {name: 'プロフィール',icon: <AccountBoxOutlinedIcon />, root: '/profile', ariaLabel: 'profile'},
   {name: 'メッセージ',icon: <MailOutlineOutlinedIcon />, root: '/message', ariaLabel: 'message'},
-  {name: 'ログアウト',icon: <ExitToAppOutlinedIcon />, root: '/logout', ariaLabel: 'logout'},
+  {name: 'ログアウト',icon:
+     <ExitToAppOutlinedIcon />, root: '/logout', ariaLabel: 'logout'},
+];
+
+//未ログインの時に表示するアイコン
+const notLogggedInPages: Pages = [
+  {name: '食材在庫',icon: <KitchenOutlinedIcon />, root: '/', ariaLabel: 'content'},
+  {name: 'レシピ検索',icon: <PlagiarismOutlinedIcon />, root: '/recipe', ariaLabel: 'recipe'},
+  {name: 'ログイン',icon: <LoginOutlinedIcon />, root: '/login', ariaLabel: 'login'},
 ];
 
 export const Header = () => {
   const {loggedIn, logout} = React.useContext(AuthContext);
   const navigate = useNavigate();
+  //ログイン状態に応じて表示するアイコンを変更
+  let pages: Pages = (loggedIn) ? logggedInPages : notLogggedInPages;
 
   const onClickNav = (path: string) => {
     //pathがlogoutならログアウトさせる
@@ -111,10 +130,10 @@ export const Header = () => {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{page.name}</Typography>
-                </MenuItem>
-              ))}
+                  <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                    <Typography sx={{ textAlign: 'center' }}>{page.name}</Typography>
+                  </MenuItem>
+                ))}
             </Menu>
           </Box>
 

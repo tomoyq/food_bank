@@ -1,9 +1,9 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 import { customAxios } from "../axios/AxiosProvider";
 
 type Props = {
-    children?: React.ReactNode;
+    children?: any;
 };
 
 export const AuthContext = createContext({} as {
@@ -16,22 +16,6 @@ export const AuthContextProvider: React.FC<Props> = ({children}) => {
     //ログイン状態
     const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
 
-    //前にログイン済みの時の再来訪時にトークンをリフレッシュさせて自動ログインさせる
-    const tokenRefresh = () => {
-        customAxios.post('/refresh/', {})
-        .then(() => {
-            setLoggedIn(true);
-        })
-        .catch(() => {
-            setLoggedIn(false);
-        });
-    };
-
-    //nullの場合は初めて開く場合とページ再来訪の場合
-    if (loggedIn === null)  {
-        tokenRefresh();
-    };
-
     //ログアウト関数
     const logout = () => {
         customAxios.post('/logout/', {})
@@ -41,7 +25,21 @@ export const AuthContextProvider: React.FC<Props> = ({children}) => {
         .catch((e) => {
             console.log(e.data);
         });
-    }
+    };
+
+    useEffect(() => {
+        //前にログイン済みの時の再来訪時にトークンをリフレッシュさせて自動ログインさせる
+        const tokenRefresh = async () => {
+            try {
+                await customAxios.post('/refresh/', {})
+            } catch {
+                setLoggedIn(false);
+            }
+            setLoggedIn(true) 
+        };
+
+        tokenRefresh();
+    }, []);
 
     return (
         <AuthContext.Provider value={{loggedIn, setLoggedIn, logout}}>
