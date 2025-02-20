@@ -2,13 +2,12 @@ from django.contrib.auth import logout
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from .serializers import CustomTokenObtainPairSerializer
 from api.settings import SIMPLE_JWT
-from api.authentication import CustomJWTAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 
 access_time = SIMPLE_JWT['ACCESS_TOKEN_LIFETIME']
 refresh_time = SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']
@@ -56,6 +55,7 @@ class CustomTokenRefreshView(generics.GenericAPIView):
         return response
 
 class LoginView(TokenObtainPairView):
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = CustomTokenObtainPairSerializer(data=request.data)
@@ -92,8 +92,6 @@ class LoginView(TokenObtainPairView):
         return response
     
 class LogoutView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [CustomJWTAuthentication]
 
     def post(self, request, *args, **kwargs):
         logout(request)
