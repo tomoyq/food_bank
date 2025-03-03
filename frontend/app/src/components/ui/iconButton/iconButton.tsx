@@ -1,12 +1,12 @@
 import { IconButton, } from "@mui/material";
 
-interface OpenMenu {
+interface OpenMenuOrNormalIconButton {
     type: 'menu';
     //childrenにiconを渡したい
     children: any;
     onClick: ((e: React.MouseEvent<HTMLElement>) => void);
     //muiのmenuコンポーネントと一緒に使う場合のprops
-    controls: string;
+    controls?: string;
 }
 
 interface Navigate {
@@ -19,8 +19,7 @@ interface Navigate {
     ariaLabel: string;
 }
 
-
-const CustomIconButton: React.FC<OpenMenu | Navigate> = (props) => {
+const CustomIconButton: React.FC<OpenMenuOrNormalIconButton | Navigate> = (props) => {
     if (props.type === 'menu') {
         return (
             <IconButton
