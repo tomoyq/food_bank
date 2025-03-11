@@ -14,6 +14,8 @@ refresh_time = SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']
 
 #tokenの有効確認
 class CustomTokenRefreshView(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+
     #cookieから検証するtokenを取得
     def post(self, request, *args, **kwargs) -> Response:
         #access tokenがある場合は200を返す

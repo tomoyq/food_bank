@@ -72,7 +72,7 @@ export const SignInForm = () => {
     if (loggedIn){
       navigate('/');
     };
-  }, [loggedIn]);
+  }, []);
 
   return (
     <>

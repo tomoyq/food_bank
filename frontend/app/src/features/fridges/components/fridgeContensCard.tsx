@@ -13,13 +13,17 @@ import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import { CustomButton, CustomIconButton } from '../../../components/ui';
 import React from 'react';
 
-type FridgeItem = {
+type FridgeContents = {
+    owner: string;
     name: string;
     quantity: number;
-    owner: string;
+    func: () => number;
 };
 
-export const FridgeContentsCard:React.FC<FridgeItem> = (props) => {
+export const FridgeContentsCard:React.FC<FridgeContents> = (props) => {
+    //期限までの日数を保持
+    const daysLeft: number = props.func();
+
   return (
     <Card
         sx={{ 
@@ -48,7 +52,7 @@ export const FridgeContentsCard:React.FC<FridgeItem> = (props) => {
             </Typography>
             <LinearProgress variant="determinate" value={50} />
             <Typography gutterBottom variant="body1">
-                期限切れまで残り １日 
+                期限切れまで残り {daysLeft}日 
             </Typography>
             <Typography gutterBottom variant="body1" aria-label='owner'>
                 作成者：{props.owner} 
