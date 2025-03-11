@@ -8,6 +8,7 @@ test("propsに渡された値がcardの中に表示されている", async () =>
                 name="牛乳"
                 quantity={1}
                 owner="あなた"
+                func={() => 1}
             />);
         
     // 対象のテキストが画面上に存在することを確認

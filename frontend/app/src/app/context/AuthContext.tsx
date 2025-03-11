@@ -27,23 +27,24 @@ export const AuthContextProvider: React.FC<Props> = ({children}) => {
         });
     };
 
-    useEffect(() => {
+    if (loggedIn === null) {
         //前にログイン済みの時の再来訪時にトークンをリフレッシュさせて自動ログインさせる
-        const tokenRefresh = async () => {
+        (async () => {
             try {
                 await customAxios.post('/refresh/', {})
+                setLoggedIn(true);
+                console.log(loggedIn);
             } catch {
                 setLoggedIn(false);
+                console.log(loggedIn);
             }
-            setLoggedIn(true) 
-        };
+        }) ();
 
-        tokenRefresh();
-    }, []);
+    };
 
     return (
         <AuthContext.Provider value={{loggedIn, setLoggedIn, logout}}>
             {children}
         </AuthContext.Provider>
     );
-};
+}; 

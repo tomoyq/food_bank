@@ -13,7 +13,7 @@ export const customAxios = axios.create({
     headers: {
        'Accept':  'application/json',
        'Content-Type': 'application/json;charset=utf-8',
-       'Access-Control-Allow-Origin': 'http://localhost:3000',
+       'Access-Control-Allow-Origin': 'http://127.0.0.1:3000',
        'X-Requested-With': 'XMLHttpRequest'
     }
 });

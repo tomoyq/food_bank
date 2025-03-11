@@ -8,11 +8,13 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import { AuthContext } from '../../../app/context/AuthContext';
 import FridgeContentsCard from '../../../features/fridges/components/fridgeContensCard'
 import { CustomButton } from '../../../components/ui';
+import { useFridgeContents } from "../../../features/fridges/hooks/useFridgeContents";
 
 const FridgeContent: React.FC = () => {
     const {loggedIn} = useContext(AuthContext);
     
-    console.log(loggedIn);
+    const {content} = useFridgeContents(loggedIn);
+    console.log(content);
 
     return (
         <>
@@ -29,6 +31,7 @@ const FridgeContent: React.FC = () => {
                 name='牛乳'
                 quantity={1}
                 owner="あなた"
+                func={() => 1}
             />
         </>
     )
