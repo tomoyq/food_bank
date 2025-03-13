@@ -70,7 +70,7 @@ export const Header = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container maxWidth={false}>
         <Toolbar disableGutters sx={{ display: { md: 'flex' }, justifyContent: {md: 'space-between'} }}>
           <Typography
