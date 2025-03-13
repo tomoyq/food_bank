@@ -18,7 +18,23 @@ describe('useFridgeContents', () => {
         
         //今日の日付と明日を比較しているため差分は1になる
         expect(daysLeft).toBe(1);
-      })
+      }
+    );
     
-    }
+    test('プロパティに渡す値を出力する関数', () => {
+        const { result } = renderHook(() => useFridgeContents(true));
+
+        const hundred = result.current.outputProgressBarProperty(100);
+        const fourth = result.current.outputProgressBarProperty(4);
+        const minas = result.current.outputProgressBarProperty(-1);
+
+        //valueの上限が100のためcolorはprimaryでvalueには100が入るはず
+        expect(hundred).toStrictEqual({color: 'primary', value: 100});
+        //期限が4日のためcolorはwarningでvalueには4が入るはず
+        expect(fourth).toStrictEqual({color: 'warning', value: 40});
+        //valueの下限が0のためcolorはerrorでvalueには0が入るはず
+        expect(minas).toStrictEqual({color: 'error', value: 0});
+      }
+    );
+  }
 )

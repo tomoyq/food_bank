@@ -3,20 +3,26 @@ import { useEffect, useState } from "react";
 import { customAxios } from "../../../app/axios/AxiosProvider";
 
 type FridgeItem = {
-    owner: string;
+    expiry_date: string;
     name: string;
-    expiryDate: string;
+    owner_name: string;
     quantity: number;
 };
 
+type LinearProgressColor = "primary" | "warning" | "error";
+
 export const useFridgeContents = (loggedIn: boolean | null) => {
-    const [content, setContent] = useState<FridgeItem[]>();
+    const [contents, setContents] = useState<FridgeItem[]>([]);
 
     useEffect(() => {
         const fetchFridgeContents = async () => {
             const result = await customAxios.get('/fridges/')
             
-            setContent(result.data);
+            //食材が登録されているときはstateを更新する
+            if (result.data.length !== 0) {
+                setContents(result.data);
+            };
+            
         };
 
         //ログイン済みの場合のみapiをたたく
@@ -41,5 +47,27 @@ export const useFridgeContents = (loggedIn: boolean | null) => {
         return Math.ceil((expiryDateObj.getTime() - today.getTime()) / oneDayMilliSec)
     };
 
-    return {content, calculateDaysLeft}
+    //progress barに渡す値を出力
+    const outputProgressBarProperty = (daysLeft: number) => {
+        //期限に応じてprogress barの色を変更
+        if (daysLeft >= 10) {
+            //10日以上の時は青色
+            var color: LinearProgressColor = "primary";
+        } else if (daysLeft >= 4) {
+            //4日以上10日未満の時は黄色
+            var color: LinearProgressColor = "warning";
+        } else {
+            //4日未満の時は赤色
+            var color: LinearProgressColor = "error";
+        };
+
+        var value = daysLeft * 10;
+        //最大値を100,最小値を0に制限
+        value = Math.max(0, value);
+        value = Math.min(100, value);
+
+        return {color, value}
+    };
+
+    return {contents, calculateDaysLeft, outputProgressBarProperty}
 };

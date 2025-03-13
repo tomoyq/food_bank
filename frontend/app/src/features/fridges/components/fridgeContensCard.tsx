@@ -17,17 +17,21 @@ type FridgeContents = {
     owner: string;
     name: string;
     quantity: number;
-    func: () => number;
+    expiryDate: string;
+    daysLeft: (expiryDate: string) => number;
+    propertyVariables: (daysLeft: number) => any;
 };
 
 export const FridgeContentsCard:React.FC<FridgeContents> = (props) => {
     //期限までの日数を保持
-    const daysLeft: number = props.func();
+    const daysLeft: number = props.daysLeft(props.expiryDate);
+
+    //progress barのpropertyに渡す値を保持
+    const {color, value} = props.propertyVariables(daysLeft);
 
   return (
     <Card
         sx={{ 
-            maxWidth: { xs: '100%', md: '30%' },
             border: '1px solid #9ca3af',
             boxShadow: 'none',
             marginTop: 2
@@ -50,7 +54,7 @@ export const FridgeContentsCard:React.FC<FridgeContents> = (props) => {
             <Typography gutterBottom variant="body1" component="div" aria-label='quantity'>
                 個数：{props.quantity}
             </Typography>
-            <LinearProgress variant="determinate" value={50} />
+            <LinearProgress variant="determinate" value={value} color={color}/>
             <Typography gutterBottom variant="body1">
                 期限切れまで残り {daysLeft}日 
             </Typography>

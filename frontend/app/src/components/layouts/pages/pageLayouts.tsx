@@ -10,12 +10,14 @@ export const PageLayouts:React.FC<Props> = ({children}) => {
             <Box
                 sx={{
                     width: 'auto',
+                    height: '100%',
                     border: 1,
                     borderColor: 'secondary.light',
                     borderRadius: 2,
                     mx: 5,
                     my: 2,
-                    p: 3,                   
+                    p: 3,
+                    overflow: 'hidden'                   
                 }}
             >
                 {children}

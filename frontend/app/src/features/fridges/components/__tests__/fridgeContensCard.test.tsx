@@ -3,12 +3,18 @@ import { render, screen, } from "@testing-library/react";
 
 import { FridgeContentsCard } from "../fridgeContensCard";
 
+const mockPropertyVariables = () => {
+    return {color: 'primary', value: 100}
+};
+
 test("propsに渡された値がcardの中に表示されている", async () => {
     render(<FridgeContentsCard 
                 name="牛乳"
                 quantity={1}
                 owner="あなた"
-                func={() => 1}
+                expiryDate='2025-1-1'
+                daysLeft={() => 10}
+                propertyVariables={mockPropertyVariables}
             />);
         
     // 対象のテキストが画面上に存在することを確認
