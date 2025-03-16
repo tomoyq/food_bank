@@ -26,6 +26,43 @@ type Pages = {
   ariaLabel: string
 }[]
 
+const style = {
+  toolbar: {
+    display: { md: 'flex' }, 
+    justifyContent: {md: 'space-between'}
+  },
+  desktopHeaderTitle: {
+    display: { xs: 'none', md: 'block' },
+    fontFamily: 'monospace',
+    fontWeight: 700,
+    letterSpacing: '.3rem',
+    color: 'inherit',
+  },
+  mobileHeaderTitle: {
+    display: 'flex',
+    mr: 2,
+    fontFamily: 'monospace',
+    fontWeight: 700,
+    letterSpacing: '.3rem',
+    color: 'inherit',
+    alignItems: 'center',
+  },
+  headerContents: {
+    flexGrow: 1,
+    display: { xs: 'flex', md: 'none' },
+    justifyContent: {xs: 'space-between'}
+  },
+  mobileMenuItems: {
+    display: { xs: 'block', md: 'none' }
+  },
+  mobileMenuNames: {
+    textAlign: 'center'
+  },
+  desktopMenuContents: {
+    display: { xs: 'none', md: 'flex' }
+  }
+};
+
 //{ページ名、アイコン、遷移先ルート}オブジェクトを表示したいページ分持つ
 //ログイン済みの時に表示するアイコン
 const logggedInPages: Pages = [
@@ -72,37 +109,23 @@ export const Header = () => {
   return (
     <AppBar position="sticky">
       <Container maxWidth={false}>
-        <Toolbar disableGutters sx={{ display: { md: 'flex' }, justifyContent: {md: 'space-between'} }}>
+        <Toolbar disableGutters sx={style.toolbar}>
           <Typography
             variant="h3"
             component='h1'
             noWrap
-            sx={{
-              display: { xs: 'none', md: 'block' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-            }}
+            sx={style.desktopHeaderTitle}
           >
             LOGO
           </Typography>
           
           
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, justifyContent: {xs: 'space-between'}}}>
+          <Box sx={style.headerContents}>
             <Typography
               variant="h5"
               noWrap
               component="h1"
-              sx={{
-                display: 'flex',
-                mr: 2,
-                fontFamily: 'monospace',
-                fontWeight: 700,
-                letterSpacing: '.3rem',
-                color: 'inherit',
-                alignItems: 'center',
-              }}
+              sx={style.mobileHeaderTitle}
             >
               LOGO
             </Typography>
@@ -127,17 +150,17 @@ export const Header = () => {
               }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
-              sx={{ display: { xs: 'block', md: 'none' } }}
+              sx={style.mobileMenuItems}
             >
               {pages.map((page) => (
                   <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                    <Typography sx={{ textAlign: 'center' }}>{page.name}</Typography>
+                    <Typography sx={style.mobileMenuNames}>{page.name}</Typography>
                   </MenuItem>
                 ))}
             </Menu>
           </Box>
 
-          <Box sx={{ display: { xs: 'none', md: 'flex' }}}>
+          <Box sx={style.desktopMenuContents}>
             {pages.map((page) => (
               <CustomIconButton 
                 type='nav'

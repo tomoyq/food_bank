@@ -15,6 +15,7 @@ test("propsに渡された値がcardの中に表示されている", async () =>
                 expiryDate='2025-1-1'
                 daysLeft={() => 10}
                 propertyVariables={mockPropertyVariables}
+                handleDelete={() => console.log('open')}
             />);
         
     // 対象のテキストが画面上に存在することを確認
