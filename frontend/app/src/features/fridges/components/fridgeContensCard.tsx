@@ -20,6 +20,13 @@ type FridgeContents = {
     expiryDate: string;
     daysLeft: (expiryDate: string) => number;
     propertyVariables: (daysLeft: number) => any;
+    handleDelete: () => void;
+};
+
+const style = {
+    border: '1px solid #9ca3af',
+    boxShadow: 'none',
+    marginTop: 2
 };
 
 export const FridgeContentsCard:React.FC<FridgeContents> = (props) => {
@@ -30,20 +37,14 @@ export const FridgeContentsCard:React.FC<FridgeContents> = (props) => {
     const {color, value} = props.propertyVariables(daysLeft);
 
   return (
-    <Card
-        sx={{ 
-            border: '1px solid #9ca3af',
-            boxShadow: 'none',
-            marginTop: 2
-        }}
-    >
+    <Card sx={style}>
         <CardHeader
             action={
                 <>
                     <CustomIconButton type='menu' onClick={() => console.log(1)}>
                         <EditNoteOutlinedIcon />
                     </CustomIconButton>
-                    <CustomIconButton type='menu' onClick={() => console.log(2)}>
+                    <CustomIconButton type='menu' onClick={props.handleDelete}>
                         <DeleteForeverOutlinedIcon />
                     </CustomIconButton>
                 </>

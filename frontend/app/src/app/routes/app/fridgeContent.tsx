@@ -2,6 +2,7 @@ import React from "react"
 import {
     Box,
     Grid2,
+    Modal,
     Typography
 } from '@mui/material';
 import { useContext } from 'react';
@@ -11,11 +12,36 @@ import { AuthContext } from '../../../app/context/AuthContext';
 import FridgeContentsCard from '../../../features/fridges/components/fridgeContensCard'
 import { CustomButton } from '../../../components/ui';
 import { useFridgeContents } from "../../../features/fridges/hooks/useFridgeContents";
+import { useModal } from "../../../hooks";
+
+const style = {
+    fridgeContents: {
+        height: '100%',
+        overflow: 'auto',
+    },
+    createFormModal: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    }
+};
 
 const FridgeContent: React.FC = () => {
     const {loggedIn} = useContext(AuthContext);
     
     const {contents, calculateDaysLeft, outputProgressBarProperty} = useFridgeContents(loggedIn);
+
+    //在庫追加フォームのモーダル制御
+    const {open: openCreateForm, handleOpen: handleOpenCreateForm, handleClose: handleCloseCreateForm} = useModal()
+
+    //削除モーダル制御
+    const {open: openDeleteModal, handleOpen: handleOpenDeleteModal, handleClose: handleCloseDeleteModal} = useModal()
 
     return (
         <>
@@ -26,12 +52,9 @@ const FridgeContent: React.FC = () => {
                 variant="contained"
                 text="食材を追加する"
                 icon={<AddOutlinedIcon />}
-                onClick={() => console.log('食材を追加します')}
+                onClick={handleOpenCreateForm}
             />
-            <Box sx={{
-                height: '100%',
-                overflow: 'auto',
-            }}>
+            <Box sx={style.fridgeContents}>
                 {contents !== null ?
                     <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                         {contents.map((content, index) => (
@@ -43,6 +66,7 @@ const FridgeContent: React.FC = () => {
                                     expiryDate={content.expiry_date}
                                     daysLeft={calculateDaysLeft}
                                     propertyVariables={outputProgressBarProperty}
+                                    handleDelete={handleOpenDeleteModal}
                                 />
                             </Grid2>
                         ))}
@@ -53,6 +77,38 @@ const FridgeContent: React.FC = () => {
                     </Typography>  
                 }
             </Box>
+
+            <Modal
+                open={openCreateForm}
+                onClose={handleCloseCreateForm}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style.createFormModal}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        作成フォーム
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                    </Typography>
+                </Box>
+            </Modal>
+
+            <Modal
+                open={openDeleteModal}
+                onClose={handleCloseDeleteModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style.createFormModal}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        削除モーダル
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                    </Typography>
+                </Box>
+            </Modal>
             
         </>
     )
