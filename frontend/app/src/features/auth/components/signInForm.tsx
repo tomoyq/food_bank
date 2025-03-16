@@ -46,33 +46,8 @@ const ContainerLabel = styled.div`
 
 export const SignInForm = () => {
   const {loggedIn, setLoggedIn} = useContext(AuthContext);
-  const {control, handleSubmit, setError, errors} = useSignInForm();
-  const navigate = useNavigate()
-
-  const onSubmit: SubmitHandler<SignInFormData> = (data: SignInFormData) => {
-    customAxios.post('/login/', data)
-    .then(() => {
-      //ログイン状態にする
-      setLoggedIn(true);
-      navigate('/');
-    })
-    .catch((e) => {
-      console.log(e.response)
-
-      //サーバーエラーの内容を表示させる
-      setError('root.serverError', {
-        type: 'serverErrror',
-        message: e.response.data.detail
-      })
-    })
-  };
-
-  useEffect(() => {
-    //ログイン済みならhomeへリダイレクト
-    if (loggedIn){
-      navigate('/');
-    };
-  }, []);
+  
+  const {control, handleSubmit, errors, onSubmit} = useSignInForm(loggedIn, setLoggedIn);
 
   return (
     <>
