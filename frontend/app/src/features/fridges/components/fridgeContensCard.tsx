@@ -29,7 +29,7 @@ const style = {
     marginTop: 2
 };
 
-export const FridgeContentsCard:React.FC<FridgeContents> = (props) => {
+const FridgeContentsCard:React.FC<FridgeContents> = (props) => {
     //期限までの日数を保持
     const daysLeft: number = props.daysLeft(props.expiryDate);
 

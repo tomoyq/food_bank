@@ -1,4 +1,5 @@
-import { Button }from '@mui/material';
+import { Theme } from '@emotion/react';
+import { Button, SxProps }from '@mui/material';
 
 type ButtonProps = {
     variant: 'contained' | 'outlined';
@@ -6,6 +7,7 @@ type ButtonProps = {
     fullWidth?: boolean;
     icon?: JSX.Element;
     onClick?: () => void;
+    sx?: SxProps<Theme>
 }
 
 const CustomButton = (props: ButtonProps) => {
@@ -19,6 +21,7 @@ const CustomButton = (props: ButtonProps) => {
                 variant={props.variant}
                 startIcon={props.icon}
                 onClick={props.onClick}
+                sx={props.sx}
             >
                 {props.text}
             </Button>
@@ -33,6 +36,7 @@ const CustomButton = (props: ButtonProps) => {
                 fullWidth={props.fullWidth}
                 variant={props.variant}
                 startIcon={props.icon}
+                sx={props.sx}
             >
                 {props.text}
             </Button>
