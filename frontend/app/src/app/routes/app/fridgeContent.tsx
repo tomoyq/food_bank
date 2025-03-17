@@ -9,10 +9,12 @@ import { useContext } from 'react';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 
 import { AuthContext } from '../../../app/context/AuthContext';
-import FridgeContentsCard from '../../../features/fridges/components/fridgeContensCard'
+import { FridgeContentsCard, CreateFridgeContentsForm } from '../../../features/fridges/components/index'
 import { CustomButton } from '../../../components/ui';
+import { useCrudContents } from "../../../features/fridges/hooks/useCrudContents";
 import { useFridgeContents } from "../../../features/fridges/hooks/useFridgeContents";
 import { useModal } from "../../../hooks";
+
 
 const style = {
     fridgeContents: {
@@ -24,9 +26,10 @@ const style = {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 400,
+        width: {xs: '80%', md: '30%'},
         bgcolor: 'background.paper',
         border: '2px solid #000',
+        borderRadius: '20px',
         boxShadow: 24,
         p: 4,
     }
@@ -36,6 +39,8 @@ const FridgeContent: React.FC = () => {
     const {loggedIn} = useContext(AuthContext);
     
     const {contents, calculateDaysLeft, outputProgressBarProperty} = useFridgeContents(loggedIn);
+
+    const {control, handleSubmit, errors, onSubmitCreateForm} = useCrudContents();
 
     //在庫追加フォームのモーダル制御
     const {open: openCreateForm, handleOpen: handleOpenCreateForm, handleClose: handleCloseCreateForm} = useModal()
@@ -85,12 +90,11 @@ const FridgeContent: React.FC = () => {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style.createFormModal}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        作成フォーム
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                    </Typography>
+                    <CreateFridgeContentsForm 
+                        control={control}
+                        handleSubmit={handleSubmit}
+                        onSubmit={onSubmitCreateForm}
+                    />
                 </Box>
             </Modal>
 

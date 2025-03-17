@@ -1,8 +1,9 @@
 import {
     Box,
     FormLabel,
+    MenuItem,
     TextField,
-} from '@mui/material'
+} from '@mui/material';
 import { FieldPath, Control, useController, } from 'react-hook-form';
 
 
@@ -10,20 +11,26 @@ type FormProps = {
     name: FieldPath<any>;
     control: Control<any>;
     type: React.HTMLInputTypeAttribute;
-    helperText?: string;
     placeholder: string;
+    enum?: string[];
 };
 
 const style = {
     formLabel: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        mt: {md: '5px'},
+        mr: {md: '15px'},
+    },
+    formInput: {
+        flexBasis: {md: '70%'},
     },
     inputsLayout : {
-        display: { xs: 'none', md: 'flex' },
+        display: { xs: 'block', md: 'flex' },
+        justifyContent: {md: 'flex-end'},
     },
 };
 
-const CustomTextInput = (props: FormProps) => {
+const CustomInput = (props: FormProps) => {
     const {
         field,
         formState: { errors }
@@ -34,33 +41,71 @@ const CustomTextInput = (props: FormProps) => {
 
     const errorMessage = errors?.[props.name]?.message as string;
 
-
-    return (
-        <>
-            <Box sx={style.inputsLayout}>
-                <FormLabel
-                    htmlFor={field.name}
-                    sx={style.formLabel}
-                >
-                    {field.name}
-                </FormLabel>
-                <TextField
-                    {...field}
-                    error={errorMessage? true : false}
-                    helperText={errorMessage}
-                    id={field.name}
-                    type={props.type}
-                    name={field.name}
-                    placeholder={props.placeholder}
-                    autoFocus
-                    fullWidth
-                    variant="outlined"
-                    color='secondary'
-                    size='small'
-                />
-            </Box>           
-        </>
-    )
+    //propsにenumが合う場合はセレクトボックスを表示
+    if (props.enum) {
+        return (
+            <>
+                <Box sx={style.inputsLayout}>
+                    <FormLabel
+                        htmlFor={field.name}
+                        sx={style.formLabel}
+                    >
+                        {field.name}
+                    </FormLabel>
+                    <TextField
+                        {...field}
+                        error={errorMessage? true : false}
+                        helperText={errorMessage}
+                        id={field.name}
+                        select
+                        name={field.name}
+                        placeholder={props.placeholder}
+                        autoFocus
+                        fullWidth
+                        variant="outlined"
+                        color='secondary'
+                        size='small'
+                        sx={style.formInput}
+                    >
+                        {props.enum?.map((value) => (
+                            <MenuItem key={value} value={value}>
+                                {value}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </Box>           
+            </>
+        );
+    } else {
+        return (
+            <>
+                <Box sx={style.inputsLayout}>
+                    <FormLabel
+                        htmlFor={field.name}
+                        sx={style.formLabel}
+                    >
+                        {field.name}
+                    </FormLabel>
+                    <TextField
+                        {...field}
+                        error={errorMessage? true : false}
+                        helperText={errorMessage}
+                        id={field.name}
+                        type={props.type}
+                        name={field.name}
+                        placeholder={props.placeholder}
+                        autoFocus
+                        fullWidth
+                        variant="outlined"
+                        color='secondary'
+                        size='small'
+                        sx={style.formInput}
+                    />
+                </Box>           
+            </>
+        )
+    }
+    
 };
 
-export default CustomTextInput
+export default CustomInput

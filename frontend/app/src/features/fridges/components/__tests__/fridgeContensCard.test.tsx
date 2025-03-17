@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import { render, screen, } from "@testing-library/react";
 
-import { FridgeContentsCard } from "../fridgeContensCard";
+import { FridgeContentsCard } from "../index";
 
 const mockPropertyVariables = () => {
     return {color: 'primary', value: 100}
