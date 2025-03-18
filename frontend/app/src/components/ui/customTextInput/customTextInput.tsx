@@ -12,7 +12,11 @@ type FormProps = {
     control: Control<any>;
     type: React.HTMLInputTypeAttribute;
     placeholder: string;
+    value?: any;
+    //セレクトボックスの中身
     enum?: string[];
+    //テストでgetByLabelを使う場合に使用
+    aria?: string;
 };
 
 const style = {
@@ -60,11 +64,13 @@ const CustomInput = (props: FormProps) => {
                         select
                         name={field.name}
                         placeholder={props.placeholder}
+                        aria-label={props.aria}
                         autoFocus
                         fullWidth
                         variant="outlined"
                         color='secondary'
                         size='small'
+                        defaultValue={props.value}
                         sx={style.formInput}
                     >
                         {props.enum?.map((value) => (
@@ -94,6 +100,8 @@ const CustomInput = (props: FormProps) => {
                         type={props.type}
                         name={field.name}
                         placeholder={props.placeholder}
+                        aria-labelledby={props.aria}
+                        defaultValue={props.value}
                         autoFocus
                         fullWidth
                         variant="outlined"

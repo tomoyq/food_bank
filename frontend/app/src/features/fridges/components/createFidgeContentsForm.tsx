@@ -71,6 +71,7 @@ const CreateFridgeContentsForm = (props: InputProps) => {
                     control={props.control}
                     type='date'
                     placeholder='年/月/日'
+                    aria='expiryDate'
                 />
 
                 <CustomInput 
@@ -78,6 +79,7 @@ const CreateFridgeContentsForm = (props: InputProps) => {
                     control={props.control}
                     type='number'
                     placeholder='個数'
+                    aria='quantity'
                 />
 
                 <CustomInput 
@@ -86,6 +88,8 @@ const CreateFridgeContentsForm = (props: InputProps) => {
                     type='select'
                     placeholder='カテゴリー'
                     enum={CATEGORY}
+                    aria='category'
+                    value={''}
                 />
 
                 <CustomButton
