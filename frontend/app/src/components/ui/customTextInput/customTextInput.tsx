@@ -1,11 +1,12 @@
 import {
     Box,
+    FormHelperText,
     FormLabel,
     MenuItem,
+    Select,
     TextField,
 } from '@mui/material';
-import { FieldPath, Control, useController, } from 'react-hook-form';
-
+import { FieldPath, FieldError, Control, useController, } from 'react-hook-form';
 
 type FormProps = {
     name: FieldPath<any>;
@@ -13,10 +14,14 @@ type FormProps = {
     type: React.HTMLInputTypeAttribute;
     placeholder: string;
     value?: any;
+    //入力欄の名前
+    inputTag: string;
     //セレクトボックスの中身
     enum?: string[];
     //テストでgetByLabelを使う場合に使用
     aria?: string;
+    //fieldに表示するエラーをuseFormからもらう
+    fieldError?: FieldError;
 };
 
 const style = {
@@ -32,6 +37,10 @@ const style = {
         display: { xs: 'block', md: 'flex' },
         justifyContent: {md: 'flex-end'},
     },
+    errorMessage: {
+        mx: '14px',
+        mt: '4px',
+    },
 };
 
 const CustomInput = (props: FormProps) => {
@@ -43,6 +52,7 @@ const CustomInput = (props: FormProps) => {
         control: props.control,
       });
 
+    //errorsにエラーメッセージが入っている場合は変数に格納
     const errorMessage = errors?.[props.name]?.message as string;
 
     //propsにenumが合う場合はセレクトボックスを表示
@@ -54,16 +64,14 @@ const CustomInput = (props: FormProps) => {
                         htmlFor={field.name}
                         sx={style.formLabel}
                     >
-                        {field.name}
+                        {props.inputTag}
                     </FormLabel>
-                    <TextField
+                    <Select
                         {...field}
-                        error={errorMessage? true : false}
-                        helperText={errorMessage}
+                        error={errorMessage ? true : false}
                         id={field.name}
-                        select
+                        data-testid={props.name}
                         name={field.name}
-                        placeholder={props.placeholder}
                         aria-label={props.aria}
                         autoFocus
                         fullWidth
@@ -74,11 +82,17 @@ const CustomInput = (props: FormProps) => {
                         sx={style.formInput}
                     >
                         {props.enum?.map((value) => (
-                            <MenuItem key={value} value={value}>
+                            <MenuItem key={value} value={value} aria-label={value}>
                                 {value}
                             </MenuItem>
                         ))}
-                    </TextField>
+                    </Select>
+                    {errorMessage ? 
+                        <FormHelperText error sx={style.errorMessage}>
+                            {errorMessage}
+                        </FormHelperText>
+                    : <></>
+                    }
                 </Box>           
             </>
         );
@@ -90,13 +104,14 @@ const CustomInput = (props: FormProps) => {
                         htmlFor={field.name}
                         sx={style.formLabel}
                     >
-                        {field.name}
+                        {props.inputTag}
                     </FormLabel>
                     <TextField
                         {...field}
                         error={errorMessage? true : false}
                         helperText={errorMessage}
                         id={field.name}
+                        data-testid={props.name}
                         type={props.type}
                         name={field.name}
                         placeholder={props.placeholder}

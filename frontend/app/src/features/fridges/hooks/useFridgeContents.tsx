@@ -1,6 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { customAxios } from "../../../app/axios/AxiosProvider";
+import { useCrudContents } from "./useCrudContents";
+import { CreateFridgeContentsFormData } from "@/zod/createFidgeContentsFormSchema";
+
+type Props = {
+    loggedIn: boolean | null;
+    handleClose: (func: () => void) => void;
+};
 
 type FridgeItem = {
     expiry_date: string;
@@ -11,9 +18,14 @@ type FridgeItem = {
 
 type LinearProgressColor = "primary" | "warning" | "error";
 
-export const useFridgeContents = (loggedIn: boolean | null) => {
+export const useFridgeContents = (props: Props) => {
+    //在庫状態
     const [contents, setContents] = useState<FridgeItem[]>([]);
 
+    //在庫の追加、更新、削除するときサーバーからエラーが返ったときに使用
+    const { control, handleSubmit, setError, errors, reset } = useCrudContents();
+
+    //ログイン状態が変化したときに実行
     useEffect(() => {
         const fetchFridgeContents = async () => {
             const result = await customAxios.get('/fridges/')
@@ -26,13 +38,32 @@ export const useFridgeContents = (loggedIn: boolean | null) => {
         };
 
         //ログイン済みの場合のみapiをたたく
-        if (loggedIn) {
+        if (props.loggedIn) {
             fetchFridgeContents()
         };
-    }, [loggedIn]);
+    }, [props.loggedIn]);
+
+    //在庫追加フォームを送信
+    const onSubmitCreateForm = useCallback( handleSubmit( async (data: CreateFridgeContentsFormData) => {
+        //apiにデータを送信
+        await customAxios.post('/fridges/', data=data)
+        //作成成功の時はレスポンスをcontentsに入れる
+        .then(res => {
+            setContents(res.data);
+
+            //フォームの値を削除してmodalを閉じる
+            props.handleClose(reset);
+        })
+        //エラーが返った場合エラーメッセージをuseFormのsetErrorで入れる 
+        .catch((error) => {
+            console.log(error.response);
+            setError('root.serverError', {type: 'serverError', message: error.response.data.expiry_date[0]});
+        });   
+        
+    }), [contents]);
 
     //賞味期限まであと何日か計算
-    const calculateDaysLeft = (expiryDate: string) => {
+    const calculateDaysLeft = useCallback((expiryDate: string) => {
         //引数の賞味期限を-で分割する
         const date = expiryDate.split('-');
 
@@ -44,11 +75,14 @@ export const useFridgeContents = (loggedIn: boolean | null) => {
         const today = new Date();
 
         //切り上げる
-        return Math.ceil((expiryDateObj.getTime() - today.getTime()) / oneDayMilliSec)
-    };
+        var daysLeft = Math.ceil((expiryDateObj.getTime() - today.getTime()) / oneDayMilliSec)
+        
+        //期限が過ぎているものは0で出力
+        return daysLeft < 0 ? 0 : daysLeft
+    }, [contents]);
 
     //progress barに渡す値を出力
-    const outputProgressBarProperty = (daysLeft: number) => {
+    const outputProgressBarProperty = useCallback((daysLeft: number) => {
         //期限に応じてprogress barの色を変更
         if (daysLeft >= 10) {
             //10日以上の時は青色
@@ -67,7 +101,7 @@ export const useFridgeContents = (loggedIn: boolean | null) => {
         value = Math.min(100, value);
 
         return {color, value}
-    };
+    }, [contents]);
 
-    return {contents, calculateDaysLeft, outputProgressBarProperty}
+    return { control, contents, onSubmitCreateForm, calculateDaysLeft, outputProgressBarProperty, errors, reset}
 };
