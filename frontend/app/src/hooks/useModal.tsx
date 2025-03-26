@@ -3,7 +3,15 @@ import { useState } from "react";
 const useModal = () => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+
+    //modalを閉じるときに一緒に実行したい関数があれば引数にもらう
+    const handleClose = (func?: () => void) => {
+        setOpen(false);
+        
+        if (func) {
+            func()
+        };
+    };
 
     return {open, handleOpen, handleClose}
 };

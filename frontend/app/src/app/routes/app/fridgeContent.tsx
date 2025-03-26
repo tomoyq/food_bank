@@ -11,7 +11,6 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import { AuthContext } from '../../../app/context/AuthContext';
 import { FridgeContentsCard, CreateFridgeContentsForm } from '../../../features/fridges/components/index'
 import { CustomButton } from '../../../components/ui';
-import { useCrudContents } from "../../../features/fridges/hooks/useCrudContents";
 import { useFridgeContents } from "../../../features/fridges/hooks/useFridgeContents";
 import { useModal } from "../../../hooks";
 
@@ -37,16 +36,17 @@ const style = {
 
 const FridgeContent: React.FC = () => {
     const {loggedIn} = useContext(AuthContext);
-    
-    const {contents, calculateDaysLeft, outputProgressBarProperty} = useFridgeContents(loggedIn);
-
-    const {control, handleSubmit, errors, onSubmitCreateForm} = useCrudContents();
 
     //在庫追加フォームのモーダル制御
-    const {open: openCreateForm, handleOpen: handleOpenCreateForm, handleClose: handleCloseCreateForm} = useModal()
+    const {open: openCreateForm, handleOpen: handleOpenCreateForm, handleClose: handleCloseCreateForm} = useModal();
 
     //削除モーダル制御
-    const {open: openDeleteModal, handleOpen: handleOpenDeleteModal, handleClose: handleCloseDeleteModal} = useModal()
+    const {open: openDeleteModal, handleOpen: handleOpenDeleteModal, handleClose: handleCloseDeleteModal} = useModal();
+    
+    const {control, contents, onSubmitCreateForm, calculateDaysLeft, outputProgressBarProperty, errors, reset} = useFridgeContents(
+            {loggedIn: loggedIn,
+             handleClose: handleCloseCreateForm
+            });
 
     return (
         <>
@@ -85,22 +85,23 @@ const FridgeContent: React.FC = () => {
 
             <Modal
                 open={openCreateForm}
-                onClose={handleCloseCreateForm}
+                onClose={() => handleCloseCreateForm(reset)}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style.createFormModal}>
                     <CreateFridgeContentsForm 
                         control={control}
-                        handleSubmit={handleSubmit}
+                        errors={errors}
                         onSubmit={onSubmitCreateForm}
+                        handleClose={() => handleCloseCreateForm(reset)}
                     />
                 </Box>
             </Modal>
 
             <Modal
                 open={openDeleteModal}
-                onClose={handleCloseDeleteModal}
+                onClose={() => handleCloseDeleteModal(reset)}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >

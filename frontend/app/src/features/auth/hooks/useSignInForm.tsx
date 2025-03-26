@@ -24,6 +24,7 @@ export const useSignInForm = (loggedIn: boolean | null, setLoggedIn: React.Dispa
     
     //ログイン関数
     const onSubmit: SubmitHandler<SignInFormData> = (data: SignInFormData) => {
+      console.log(data)
       customAxios.post('/login/', data)
       .then(() => {
         //ログイン状態にする
@@ -31,11 +32,11 @@ export const useSignInForm = (loggedIn: boolean | null, setLoggedIn: React.Dispa
         navigate('/');
       })
       .catch((e) => {
-        console.log(e.response)
+        console.log(e)
   
         //サーバーエラーの内容を表示させる
         setError('root.serverError', {
-          type: 'serverErrror',
+          type: 'serverError',
           message: e.response.data.detail
         })
       })

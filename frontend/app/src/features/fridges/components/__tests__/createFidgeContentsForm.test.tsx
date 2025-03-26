@@ -1,112 +1,146 @@
 import '@testing-library/jest-dom'
-import {fireEvent, render, renderHook, screen, waitFor} from '@testing-library/react';
+import { act } from 'react';
+import {fireEvent, render, renderHook, screen, waitFor, within} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import MockAdapter from "axios-mock-adapter";
 
 import { CreateFridgeContentsForm } from '../index';
-import { useCrudContents } from '../../hooks/useCrudContents';
-import userEvent from '@testing-library/user-event';
+import { useFridgeContents } from '../../hooks/useFridgeContents';
+import { customAxios } from '../../../../app/axios/AxiosProvider';
+
+const responce = {
+    expiry_date: [ 'サーバーエラーです', ]
+};
+
+const mock = new MockAdapter(customAxios);
 
 describe('在庫追加フォーム', () => {
+    beforeEach(() => {
+        mock.reset();
+    });
 
-    const setUp = () => {
-        const { result } = renderHook(() => useCrudContents());
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-        render(<CreateFridgeContentsForm 
-                    control={result.current.control}
-                    handleSubmit={result.current.handleSubmit}
-                    onSubmit={result.current.onSubmitCreateForm}
-                />);
-        const nameInput = screen.getByRole('textbox',{name:'name'}) ;
-        const expiryDateInput = screen.getByLabelText('expiryDate') ;
-        const quantityInput = screen.getByLabelText('quantity') ;
-        const categoryInput = screen.getByLabelText('category') ;
-        const submitButton = screen.getByRole('button',{name:'submit'});
-        return { nameInput, expiryDateInput, quantityInput, categoryInput, submitButton };
+    const today = new Date();
+    const yesterday = new Date(today.getTime());
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const setUp = async () => {
+        mock.onGet('/fridges/').reply(200, {})
+
+        //在庫状態の更新関数を取得してuseCrudContentsに渡す
+        const { result } = renderHook(() => useFridgeContents({
+            loggedIn: true,
+            handleClose: () => ('close')
+        }));                                                        
+
+        await act(async () => {
+            render(<CreateFridgeContentsForm 
+                control={result.current.control}
+                errors={result.current.errors}
+                onSubmit={result.current.onSubmitCreateForm}
+                handleClose={() => console.log('close')}
+            />);
+        })
+        
+            
+        const nameDiv = screen.getByTestId('name');
+        const nameInput = within(nameDiv).getAllByRole('textbox',{name:'名前', hidden: true})[0];
+        
+        const expiryDateInput = screen.getByPlaceholderText('年/月/日');
+
+        const quantityInput = screen.getByPlaceholderText('個数');
+
+        const categoryDiv = screen.getByTestId('category');
+        const categoryInput = within(categoryDiv).getAllByRole('textbox',{name:'', hidden: true})[0] ;
+
+        const submitButton = screen.getByRole('button',{name:/submit/i});
+
+        return { nameInput, expiryDateInput, quantityInput, categoryInput, submitButton, result };
     }
 
-    test('各要素が正しく読み込まれる', () => {
-        const { nameInput, expiryDateInput, quantityInput, categoryInput, submitButton } = setUp();
-        expect(nameInput).toBeInTheDocument();
-        expect(nameInput).toHaveValue('');
+    test('各要素が正しく読み込まれる', async () => {
+        const { nameInput, expiryDateInput, quantityInput, categoryInput, submitButton } = await setUp();
 
-        expect(expiryDateInput).toBeInTheDocument();
-        expect(expiryDateInput).toHaveValue('');
+        await waitFor(() => {
+            expect(nameInput).toBeInTheDocument();
+            expect(nameInput).toHaveValue('');
 
-        expect(quantityInput).toBeInTheDocument();
-        //number inputの初期値はnull
-        expect(quantityInput).toHaveValue(null);
+            expect(expiryDateInput).toBeInTheDocument();
+            expect(expiryDateInput).toHaveValue('');
 
-        expect(categoryInput).toBeInTheDocument();
+            expect(quantityInput).toBeInTheDocument();
+            //number inputの初期値はnull
+            expect(quantityInput).toHaveValue(null);
 
-        expect(submitButton).toBeInTheDocument();
+            expect(categoryInput).toBeInTheDocument();
+
+            expect(submitButton).toBeInTheDocument();
+        })
     });
 
     test('空のフィールドでフォームを送信した場合にバリデーションエラーが表示される', async () => {
-        const { submitButton } = setUp();
+        const { submitButton } = await setUp();
         userEvent.click(submitButton);
+        
         await waitFor(() => {
-            const requiredElement = screen.getAllByText('必須項目です。');
-            // '必須項目です。'と出力される項目は3つ
-            expect(requiredElement.length).toEqual(3);
+            expect(screen.getAllByText('必須項目です。').length).toBe(3);
             
-            const requiredNumberElement = screen.getAllByText('数字で入力してください。');
+            const requiredNumberElement = screen.getAllByText(/数字で入力してください。/i);
             // '数字で入力してください。'と出力される項目は1つ
             expect(requiredNumberElement.length).toEqual(1);
         });
     });
     
     test('個数入力欄に0を入力したらバリデーションエラーが表示される', async () => {
-        const { quantityInput } = setUp();
+        const { quantityInput } = await setUp();
+
         fireEvent.change(quantityInput, { target: { value: 0 } });
         fireEvent.blur(quantityInput);
+
         await waitFor(() => {
+            
             expect(screen.getByText('1以上を入力してください。')).toBeInTheDocument();
         });
     });
 
     test('個数入力欄にマイナスの数字を入力したらバリデーションエラーが表示される', async () => {
-        const { quantityInput } = setUp();
+        const { quantityInput } = await setUp();
+
         fireEvent.change(quantityInput, { target: { value: -1 } });
         fireEvent.blur(quantityInput);
+
         await waitFor(() => {
             expect(screen.getByText('1以上を入力してください。')).toBeInTheDocument();
         });
     });
 
 
-    // test('ログインに失敗した時はサーバー側のエラーメッセージが表示される', async () => {
-    //     const errorMock = new MockAdapter(customAxios);
-    //     errorMock.onPost(`/login/`).reply(401, errorResponce);
+    test('サーバー側のエラーメッセージが表示される', async () => {
+        mock.onPost('/fridges/').reply(404, responce);
 
-    //     const { usernameInput, passwordInput, submitButton } = setUp();
-    //     fireEvent.change(usernameInput, { target: { value: 'test' } });
-    //     fireEvent.blur(usernameInput);
+        const { nameInput, expiryDateInput, quantityInput, categoryInput, submitButton, result} =  await setUp();
 
-    //     fireEvent.change(passwordInput, { target: { value: 'password' } });
-    //     fireEvent.blur(passwordInput); 
+        await act(async () => {
+            fireEvent.change(nameInput, { target: { value: 'test' } });
+            fireEvent.blur(nameInput);
 
-    //     userEvent.click(submitButton);
+            fireEvent.change(expiryDateInput, { target: { value: yesterday.toISOString().split('T')[0] } });
+            fireEvent.blur(expiryDateInput); 
 
-    //     await waitFor(() => {
-    //         expect(screen.getByText('サーバーエラーです')).toBeInTheDocument();
-    //     });
-    // });
+            fireEvent.change(quantityInput, { target: { value: 1 } });
+            fireEvent.blur(quantityInput);
 
-    // test('ログインに成功した時はuseNavigateが呼ばれる', async () => {
-    //     const successMock = new MockAdapter(customAxios);
-    //     successMock.onPost(`/login/`).reply(200);
+            fireEvent.change(categoryInput, { target: { value: '肉類' } });
 
-    //     const { usernameInput, passwordInput, submitButton } = setUp();
-    //     fireEvent.change(usernameInput, { target: { value: 'test' } });
-    //     fireEvent.blur(usernameInput);
+            await result.current.onSubmitCreateForm();
+        });
 
-    //     fireEvent.change(passwordInput, { target: { value: 'password' } });
-    //     fireEvent.blur(passwordInput); 
+        //errorsにレスポンスのエラーメッセージが入っているはず
+        expect(result.current.errors.root?.serverError.message).toBe('サーバーエラーです');
+        
+    });
 
-    //     userEvent.click(submitButton);
-
-    //     await waitFor(() => {
-    //         // "/" を引数にnavigatorが呼び出される
-    //         expect(mockedNavigator).toHaveBeenCalledWith('/');
-    //     });
-    // });
 })
