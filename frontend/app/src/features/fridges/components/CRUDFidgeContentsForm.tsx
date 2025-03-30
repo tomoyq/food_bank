@@ -7,8 +7,16 @@ import { Control, FieldErrors, SubmitHandler,} from 'react-hook-form';
 
 import { CustomButton, CustomIconButton, CustomInput } from '../../../components/ui';
 
+type FridgeItem = {
+    expiry_date: string;
+    name: string;
+    owner_name: string;
+    quantity: number;
+};
+
 //useFormの戻り値のcontolとhandleSubmitをもらう
 //onSubmitにはsubmitボタンを押下後の処理を関数でもらう
+//contentは更新フォーム描画の際にdefaultValueに渡すデータ
 type InputProps = {
     control: Control<any>;
     errors: FieldErrors<{
@@ -17,9 +25,9 @@ type InputProps = {
         quantity: number;
         category: "肉類" | "魚類" | "その他";
     }>
-    //handleSubmit: UseFormHandleSubmit<any>;
     onSubmit: SubmitHandler<any>;
     handleClose: () => void;
+    content?: FridgeItem;
 };
 
 const CATEGORY = ['肉類', '魚類', 'その他'];
@@ -47,13 +55,20 @@ const style = {
     },
 };
 
-const CreateFridgeContentsForm = (props: InputProps) => {
+const CRUDFridgeContentsForm = (props: InputProps) => {
     return (
         <>
             <Box sx={style.formTitle}>
-                <Typography variant='h5'>
-                    在庫追加フォーム
-                </Typography>
+                { props.content ? 
+                    <Typography variant='h5'>
+                        在庫更新フォーム
+                    </Typography>
+                :
+                    <Typography variant='h5'>
+                        在庫追加フォーム
+                    </Typography>
+                }
+                
                 
                 <CustomIconButton 
                     type='menu'
@@ -87,6 +102,7 @@ const CreateFridgeContentsForm = (props: InputProps) => {
                     fieldError={props.errors.name}
                     type='text'
                     placeholder='名前'
+                    value={props.content?.name}
                     inputTag='名前'
                 />
 
@@ -97,6 +113,7 @@ const CreateFridgeContentsForm = (props: InputProps) => {
                     type='date'
                     placeholder='年/月/日'
                     aria='expiryDate'
+                    value={props.content?.expiry_date}
                     inputTag='賞味期限'
                 />
 
@@ -107,6 +124,7 @@ const CreateFridgeContentsForm = (props: InputProps) => {
                     type='number'
                     placeholder='個数'
                     aria='quantity'
+                    value={props.content?.quantity}
                     inputTag='在庫数'
                 />
 
@@ -135,4 +153,4 @@ const CreateFridgeContentsForm = (props: InputProps) => {
     )
 };
 
-export default CreateFridgeContentsForm
+export default CRUDFridgeContentsForm

@@ -13,13 +13,21 @@ import PlagiarismOutlinedIcon from '@mui/icons-material/PlagiarismOutlined';
 import { CustomButton, CustomIconButton } from '../../../components/ui';
 import React from 'react';
 
-type FridgeContents = {
-    owner: string;
+type FridgeItem = {
+    expiry_date: string;
     name: string;
+    owner_name: string;
     quantity: number;
+};
+
+type FridgeContentsCard = {
     expiryDate: string;
+    name: string;
+    owner: string;
+    quantity: number;
     daysLeft: (expiryDate: string) => number;
     propertyVariables: (daysLeft: number) => any;
+    handleOpenUpdateForm: (func?: (content?: FridgeItem) => Promise<void>, ) => void;
     handleDelete: () => void;
 };
 
@@ -29,7 +37,7 @@ const style = {
     marginTop: 2
 };
 
-const FridgeContentsCard:React.FC<FridgeContents> = (props) => {
+const FridgeContentsCard:React.FC<FridgeContentsCard> = (props) => {
     //期限までの日数を保持
     const daysLeft: number = props.daysLeft(props.expiryDate);
 
@@ -41,7 +49,7 @@ const FridgeContentsCard:React.FC<FridgeContents> = (props) => {
         <CardHeader
             action={
                 <>
-                    <CustomIconButton type='menu' onClick={() => console.log(1)}>
+                    <CustomIconButton type='menu' onClick={() => props.handleOpenUpdateForm()}>
                         <EditNoteOutlinedIcon />
                     </CustomIconButton>
                     <CustomIconButton type='menu' onClick={props.handleDelete}>

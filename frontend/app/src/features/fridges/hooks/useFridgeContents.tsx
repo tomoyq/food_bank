@@ -2,11 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import { customAxios } from "../../../app/axios/AxiosProvider";
 import { useCrudContents } from "./useCrudContents";
-import { CreateFridgeContentsFormData } from "@/zod/createFidgeContentsFormSchema";
 
 type Props = {
     loggedIn: boolean | null;
-    handleClose: (func: () => void) => void;
+    handleCloseCreateForm: (func: () => void) => void;
 };
 
 type FridgeItem = {
@@ -21,9 +20,6 @@ type LinearProgressColor = "primary" | "warning" | "error";
 export const useFridgeContents = (props: Props) => {
     //在庫状態
     const [contents, setContents] = useState<FridgeItem[]>([]);
-
-    //在庫の追加、更新、削除するときサーバーからエラーが返ったときに使用
-    const { control, handleSubmit, setError, errors, reset } = useCrudContents();
 
     //ログイン状態が変化したときに実行
     useEffect(() => {
@@ -42,25 +38,6 @@ export const useFridgeContents = (props: Props) => {
             fetchFridgeContents()
         };
     }, [props.loggedIn]);
-
-    //在庫追加フォームを送信
-    const onSubmitCreateForm = useCallback( handleSubmit( async (data: CreateFridgeContentsFormData) => {
-        //apiにデータを送信
-        await customAxios.post('/fridges/', data=data)
-        //作成成功の時はレスポンスをcontentsに入れる
-        .then(res => {
-            setContents(res.data);
-
-            //フォームの値を削除してmodalを閉じる
-            props.handleClose(reset);
-        })
-        //エラーが返った場合エラーメッセージをuseFormのsetErrorで入れる 
-        .catch((error) => {
-            console.log(error.response);
-            setError('root.serverError', {type: 'serverError', message: error.response.data.expiry_date[0]});
-        });   
-        
-    }), [contents]);
 
     //賞味期限まであと何日か計算
     const calculateDaysLeft = useCallback((expiryDate: string) => {
@@ -103,5 +80,5 @@ export const useFridgeContents = (props: Props) => {
         return {color, value}
     }, [contents]);
 
-    return { control, contents, onSubmitCreateForm, calculateDaysLeft, outputProgressBarProperty, errors, reset}
+    return {contents, setContents, calculateDaysLeft, outputProgressBarProperty}
 };

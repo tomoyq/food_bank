@@ -37,7 +37,11 @@ const style = {
         display: { xs: 'block', md: 'flex' },
         justifyContent: {md: 'flex-end'},
     },
-    errorMessage: {
+    selectBoxLayouts: {
+        width: { xs: '100%', md: '70%' },
+        display: 'block',
+    },
+    errorMessage: { 
         mx: '14px',
         mt: '4px',
     },
@@ -66,34 +70,36 @@ const CustomInput = (props: FormProps) => {
                     >
                         {props.inputTag}
                     </FormLabel>
-                    <Select
-                        {...field}
-                        error={errorMessage ? true : false}
-                        id={field.name}
-                        data-testid={props.name}
-                        name={field.name}
-                        aria-label={props.aria}
-                        autoFocus
-                        fullWidth
-                        variant="outlined"
-                        color='secondary'
-                        size='small'
-                        defaultValue={props.value}
-                        sx={style.formInput}
-                    >
-                        {props.enum?.map((value) => (
-                            <MenuItem key={value} value={value} aria-label={value}>
-                                {value}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    {errorMessage ? 
-                        <FormHelperText error sx={style.errorMessage}>
-                            {errorMessage}
-                        </FormHelperText>
-                    : <></>
-                    }
-                </Box>           
+                    <Box sx={style.selectBoxLayouts}>
+                        <Select
+                            {...field}
+                            error={errorMessage ? true : false}
+                            id={field.name}
+                            data-testid={props.name}
+                            name={field.name}
+                            aria-label={props.aria}
+                            autoFocus
+                            fullWidth
+                            variant="outlined"
+                            color='secondary'
+                            size='small'
+                            defaultValue={props.value}
+                            sx={style.formInput}
+                        >
+                            {props.enum?.map((value) => (
+                                <MenuItem key={value} value={value} aria-label={value}>
+                                    {value}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {errorMessage ? 
+                            <FormHelperText error sx={style.errorMessage}>
+                                {errorMessage}
+                            </FormHelperText>
+                        : <></>
+                        }
+                    </Box>
+               </Box>           
             </>
         );
     } else {

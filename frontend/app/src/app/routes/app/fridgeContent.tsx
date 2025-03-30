@@ -9,10 +9,11 @@ import { useContext } from 'react';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 
 import { AuthContext } from '../../../app/context/AuthContext';
-import { FridgeContentsCard, CreateFridgeContentsForm } from '../../../features/fridges/components/index'
+import { FridgeContentsCard, CRUDFridgeContentsForm } from '../../../features/fridges/components/index'
 import { CustomButton } from '../../../components/ui';
 import { useFridgeContents } from "../../../features/fridges/hooks/useFridgeContents";
 import { useModal } from "../../../hooks";
+import { useCrudContents } from "../../../features/fridges/hooks/useCrudContents";
 
 
 const style = {
@@ -40,13 +41,20 @@ const FridgeContent: React.FC = () => {
     //在庫追加フォームのモーダル制御
     const {open: openCreateForm, handleOpen: handleOpenCreateForm, handleClose: handleCloseCreateForm} = useModal();
 
+    //在庫更新フォームのモーダル制御
+    const {open: openUpdateForm, handleOpen: handleOpenUpdateForm, handleClose: handleCloseUpdateForm} = useModal();
+
     //削除モーダル制御
     const {open: openDeleteModal, handleOpen: handleOpenDeleteModal, handleClose: handleCloseDeleteModal} = useModal();
     
-    const {control, contents, onSubmitCreateForm, calculateDaysLeft, outputProgressBarProperty, errors, reset} = useFridgeContents(
-            {loggedIn: loggedIn,
-             handleClose: handleCloseCreateForm
-            });
+    const { contents, setContents, calculateDaysLeft, outputProgressBarProperty } =
+    useFridgeContents({ 
+        loggedIn: loggedIn,
+        handleCloseCreateForm: handleCloseCreateForm
+        });
+
+    const { control, errors, reset, handleSetTargetContent, onSubmitCreateForm, onSubmitUpdateForm } = 
+    useCrudContents({setContents: setContents, handleCloseCreateForm: handleCloseCreateForm});
 
     return (
         <>
@@ -57,7 +65,7 @@ const FridgeContent: React.FC = () => {
                 variant="contained"
                 text="食材を追加する"
                 icon={<AddOutlinedIcon />}
-                onClick={handleOpenCreateForm}
+                onClick={() => handleOpenCreateForm()}
             />
             <Box sx={style.fridgeContents}>
                 {contents !== null ?
@@ -71,7 +79,8 @@ const FridgeContent: React.FC = () => {
                                     expiryDate={content.expiry_date}
                                     daysLeft={calculateDaysLeft}
                                     propertyVariables={outputProgressBarProperty}
-                                    handleDelete={handleOpenDeleteModal}
+                                    handleOpenUpdateForm={() => handleOpenUpdateForm(handleSetTargetContent, content, index + 1)}
+                                    handleDelete={handleCloseDeleteModal}
                                 />
                             </Grid2>
                         ))}
@@ -90,11 +99,27 @@ const FridgeContent: React.FC = () => {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style.createFormModal}>
-                    <CreateFridgeContentsForm 
+                    <CRUDFridgeContentsForm 
                         control={control}
                         errors={errors}
                         onSubmit={onSubmitCreateForm}
                         handleClose={() => handleCloseCreateForm(reset)}
+                    />
+                </Box>
+            </Modal>
+
+            <Modal
+                open={openUpdateForm}
+                onClose={() => handleCloseUpdateForm(reset)}
+                aria-labelledby="modal-modal-title" 
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style.createFormModal}>
+                    <CRUDFridgeContentsForm 
+                        control={control}
+                        errors={errors}
+                        onSubmit={onSubmitUpdateForm}
+                        handleClose={() => handleCloseUpdateForm(reset)}    
                     />
                 </Box>
             </Modal>
