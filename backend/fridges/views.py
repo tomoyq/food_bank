@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 
 from .serializers import FridgeContentsSerializer
@@ -18,13 +18,16 @@ def request_data_to_serializer_field(request):
                 'quantity': request.data['quantity'],
             }
 
+#リクエストしたユーザーが保存している食材を期限の短い順で返す
+def get_queryset_custom(self):
+    user = self.request.user
+    return Fridges.objects.filter(owner=user).order_by('expiry_date')
+
 class FridgeContentListView(ListCreateAPIView):
     serializer_class = FridgeContentsSerializer
 
-    #リクエストしたユーザーが保存している食材を期限の短い順で返す
     def get_queryset(self):
-        user = self.request.user
-        return Fridges.objects.filter(owner=user).order_by('expiry_date')
+        return get_queryset_custom(self)
     
     #送信されたjsonデータを整形してserializerに渡す
     def create(self, request, *args, **kwargs):
@@ -38,3 +41,17 @@ class FridgeContentListView(ListCreateAPIView):
         res.headers = self.get_success_headers(serializer.data)
 
         return res
+    
+class UpdateDestroyFridgeContentView(RetrieveUpdateDestroyAPIView):
+    serializer_class = FridgeContentsSerializer
+
+    def get_queryset(self):
+        return get_queryset_custom(self)
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request_data_to_serializer_field(request), partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
