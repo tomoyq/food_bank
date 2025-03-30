@@ -8,14 +8,15 @@ from .models import Fridges
 User = get_user_model()
 
 class FridgeContentsSerializer(serializers.ModelSerializer):
-    #get時はuserの名前だけを返す
+    #get時はownerフィールドはuserの名前だけを返す
     owner_name = serializers.ReadOnlyField(source='owner.username')
     #post時はuserのpkを送信する
     owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), write_only=True)
 
     class Meta:
         model = Fridges
-        fields = ('owner_name','owner', 'name', 'expiry_date', 'quantity')
+        fields = ('owner_name','owner', 'id', 'name', 'expiry_date', 'quantity')
+        read_only_field = ('id')
 
     #賞味期限が今の日付よりも前の日付を入力していたらエラーを返す
     def validate_expiry_date(self, value):
