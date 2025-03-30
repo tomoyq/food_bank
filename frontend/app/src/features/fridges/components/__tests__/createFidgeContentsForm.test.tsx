@@ -4,9 +4,9 @@ import {fireEvent, render, renderHook, screen, waitFor, within} from '@testing-l
 import userEvent from '@testing-library/user-event';
 import MockAdapter from "axios-mock-adapter";
 
-import { CreateFridgeContentsForm } from '../index';
-import { useFridgeContents } from '../../hooks/useFridgeContents';
+import { CRUDFridgeContentsForm } from '../index';
 import { customAxios } from '../../../../app/axios/AxiosProvider';
+import { useCrudContents } from '../../hooks/useCrudContents';
 
 const responce = {
     expiry_date: [ 'サーバーエラーです', ]
@@ -31,13 +31,13 @@ describe('在庫追加フォーム', () => {
         mock.onGet('/fridges/').reply(200, {})
 
         //在庫状態の更新関数を取得してuseCrudContentsに渡す
-        const { result } = renderHook(() => useFridgeContents({
-            loggedIn: true,
-            handleClose: () => ('close')
+        const { result } = renderHook(() => useCrudContents({
+            setContents: jest.fn(),
+            handleCloseCreateForm: () => ('close')
         }));                                                        
 
         await act(async () => {
-            render(<CreateFridgeContentsForm 
+            render(<CRUDFridgeContentsForm 
                 control={result.current.control}
                 errors={result.current.errors}
                 onSubmit={result.current.onSubmitCreateForm}
