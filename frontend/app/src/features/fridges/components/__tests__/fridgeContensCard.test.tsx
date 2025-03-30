@@ -1,20 +1,29 @@
 import '@testing-library/jest-dom'
-import { render, screen, } from "@testing-library/react";
+import { render, renderHook, screen, } from "@testing-library/react";
 
 import { FridgeContentsCard } from "../index";
+import { useModal } from '../../../../hooks';
 
 const mockPropertyVariables = () => {
     return {color: 'primary', value: 100}
 };
 
+const mockContent = {
+    expiry_date: '2025-1-1',
+    name: "牛乳",
+    owner_name: "あなた",
+    quantity: 1,
+    id: 1,
+}
+
 test("propsに渡された値がcardの中に表示されている", async () => {
+    const { result } = renderHook(() => useModal())
+
     render(<FridgeContentsCard 
-                name="牛乳"
-                quantity={1}
-                owner="あなた"
-                expiryDate='2025-1-1'
+                content={mockContent}
                 daysLeft={() => 10}
                 propertyVariables={mockPropertyVariables}
+                handleOpenUpdateForm={result.current.handleOpen}
                 handleDelete={() => console.log('open')}
             />);
         
