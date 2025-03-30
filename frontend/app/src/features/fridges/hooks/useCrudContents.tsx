@@ -10,11 +10,14 @@ type FridgeItem = {
   name: string;
   owner_name: string;
   quantity: number;
+  id: number;
 };
 
 type Props = {
+  contents: FridgeItem[],
   setContents: React.Dispatch<React.SetStateAction<FridgeItem[]>>,
   handleCloseCreateForm: (func: () => void) => void;
+  handleCloseUpdateForm: (func: () => void) => void;
 }
 
 //フォーム送信後レスポンスの値でcontentsを更新させるためstateの更新関数をもらう
@@ -38,13 +41,13 @@ export const useCrudContents = (props: Props) => {
     const [targetIndex, setTargetIndex] = useState<number | null>(null);
 
     //更新フォームを開く時に実行する　更新したいコンテンツを設定
-    const handleSetTargetContent = useCallback( async (content: FridgeItem, index: number) => {
+    const handleSetTargetContent = useCallback( async (content: FridgeItem) => {
       setValue('expiryDate', content.expiry_date);
       setValue('name', content.name);
       setValue('quantity', content.quantity);
 
       //apiをたたくときのエンドポイントに使用
-      setTargetIndex(index);
+      setTargetIndex(content.id);
     }, [targetIndex]);
 
     //在庫追加フォームを送信
@@ -60,7 +63,6 @@ export const useCrudContents = (props: Props) => {
         })
         //エラーが返った場合エラーメッセージをuseFormのsetErrorで入れる 
         .catch((error) => {
-            console.log(error.response);
             setError('root.serverError', {type: 'serverError', message: error.response.data.expiry_date[0]});
         });   
         
@@ -68,8 +70,31 @@ export const useCrudContents = (props: Props) => {
 
     //在庫更新フォームを送信
     const onSubmitUpdateForm = useCallback( handleSubmit( async (data: CRUDFridgeContentsFormData) => {
-      console.log(data);
-      console.log(targetIndex);
+        //apiにデータを送信
+        await customAxios.put(`/fridges/${targetIndex}/`, data=data)
+        //更新成功の時はレスポンスをcontentsに入れる
+        .then(res => {
+            console.log(res);
+            //resに更新された食材のみがあるためtargetIndexを使ってcontentsの配列から対象のデータだけを更新する
+            props.setContents(props.contents.map(content => {
+              //contentの中のidがtargetIndexと同じときは対象のデータなのでres.dataで上書きする
+              if (content.id === targetIndex) {
+                return res.data;
+              } else {
+                return content;
+              };
+            }));
+
+            //targetIndexをnullに戻す
+            setTargetIndex(null);
+            //フォームの値を削除してmodalを閉じる
+            props.handleCloseUpdateForm(reset);
+        })
+        //エラーが返った場合エラーメッセージをuseFormのsetErrorで入れる 
+        .catch((error) => {
+            setError('root.serverError', {type: 'serverError', message: error.response.data.expiry_date[0]});
+        });
+
   }), [targetIndex]);
 
     return {control, errors, reset, handleSetTargetContent, onSubmitCreateForm, onSubmitUpdateForm};

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { customAxios } from "../../../app/axios/AxiosProvider";
-import { useCrudContents } from "./useCrudContents";
 
 type Props = {
     loggedIn: boolean | null;
@@ -13,6 +12,7 @@ type FridgeItem = {
     name: string;
     owner_name: string;
     quantity: number;
+    id: number;
 };
 
 type LinearProgressColor = "primary" | "warning" | "error";
@@ -21,7 +21,7 @@ export const useFridgeContents = (props: Props) => {
     //在庫状態
     const [contents, setContents] = useState<FridgeItem[]>([]);
 
-    //ログイン状態が変化したときに実行
+    //ログイン状態もしくはcontentsが変化したときに実行
     useEffect(() => {
         const fetchFridgeContents = async () => {
             const result = await customAxios.get('/fridges/')
@@ -37,7 +37,7 @@ export const useFridgeContents = (props: Props) => {
         if (props.loggedIn) {
             fetchFridgeContents()
         };
-    }, [props.loggedIn]);
+    }, [props.loggedIn, contents]);
 
     //賞味期限まであと何日か計算
     const calculateDaysLeft = useCallback((expiryDate: string) => {

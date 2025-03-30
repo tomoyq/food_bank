@@ -54,7 +54,12 @@ const FridgeContent: React.FC = () => {
         });
 
     const { control, errors, reset, handleSetTargetContent, onSubmitCreateForm, onSubmitUpdateForm } = 
-    useCrudContents({setContents: setContents, handleCloseCreateForm: handleCloseCreateForm});
+    useCrudContents({
+        contents: contents,
+        setContents: setContents,
+        handleCloseCreateForm: handleCloseCreateForm,
+        handleCloseUpdateForm: handleCloseUpdateForm
+    });
 
     return (
         <>
@@ -70,16 +75,13 @@ const FridgeContent: React.FC = () => {
             <Box sx={style.fridgeContents}>
                 {contents !== null ?
                     <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                        {contents.map((content, index) => (
-                            <Grid2 key={index} size={{ xs: 6, sm: 4, md: 3 }}>
+                        {contents.map((content) => (
+                            <Grid2 key={content.id} size={{ xs: 6, sm: 4, md: 3 }}>
                                 <FridgeContentsCard 
-                                    name={content.name}
-                                    quantity={content.quantity}
-                                    owner={content.owner_name}
-                                    expiryDate={content.expiry_date}
+                                    content={content}
                                     daysLeft={calculateDaysLeft}
                                     propertyVariables={outputProgressBarProperty}
-                                    handleOpenUpdateForm={() => handleOpenUpdateForm(handleSetTargetContent, content, index + 1)}
+                                    handleOpenUpdateForm={() => handleOpenUpdateForm(handleSetTargetContent, content)}
                                     handleDelete={handleCloseDeleteModal}
                                 />
                             </Grid2>

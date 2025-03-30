@@ -18,13 +18,11 @@ type FridgeItem = {
     name: string;
     owner_name: string;
     quantity: number;
+    id: number;
 };
 
 type FridgeContentsCard = {
-    expiryDate: string;
-    name: string;
-    owner: string;
-    quantity: number;
+    content: FridgeItem;
     daysLeft: (expiryDate: string) => number;
     propertyVariables: (daysLeft: number) => any;
     handleOpenUpdateForm: (func?: (content?: FridgeItem) => Promise<void>, ) => void;
@@ -39,7 +37,7 @@ const style = {
 
 const FridgeContentsCard:React.FC<FridgeContentsCard> = (props) => {
     //期限までの日数を保持
-    const daysLeft: number = props.daysLeft(props.expiryDate);
+    const daysLeft: number = props.daysLeft(props.content['expiry_date']);
 
     //progress barのpropertyに渡す値を保持
     const {color, value} = props.propertyVariables(daysLeft);
@@ -57,18 +55,18 @@ const FridgeContentsCard:React.FC<FridgeContentsCard> = (props) => {
                     </CustomIconButton>
                 </>
             }
-            title={props.name}
+            title={props.content['name']}
         />
         <CardContent>
             <Typography gutterBottom variant="body1" component="div" aria-label='quantity'>
-                個数：{props.quantity}
+                個数：{props.content['quantity']}
             </Typography>
             <LinearProgress variant="determinate" value={value} color={color}/>
             <Typography gutterBottom variant="body1">
                 期限切れまで残り {daysLeft}日 
             </Typography>
             <Typography gutterBottom variant="body1" aria-label='owner'>
-                作成者：{props.owner} 
+                作成者：{props.content['owner_name']} 
             </Typography>
         </CardContent>
         <CardActions>

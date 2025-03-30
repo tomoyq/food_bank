@@ -32,8 +32,10 @@ describe('在庫追加フォーム', () => {
 
         //在庫状態の更新関数を取得してuseCrudContentsに渡す
         const { result } = renderHook(() => useCrudContents({
+            contents: [],
             setContents: jest.fn(),
-            handleCloseCreateForm: () => ('close')
+            handleCloseCreateForm: () => ('close'),
+            handleCloseUpdateForm: () => ('close')
         }));                                                        
 
         await act(async () => {
