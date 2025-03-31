@@ -53,7 +53,7 @@ const FridgeContent: React.FC = () => {
         handleCloseCreateForm: handleCloseCreateForm
         });
 
-    const { control, errors, reset, handleSetTargetContent, onSubmitCreateForm, onSubmitUpdateForm } = 
+    const { control, errors, reset, handleSetTargetContent, onSubmitCreateForm, onSubmitUpdateForm, onSubmitDelete } = 
     useCrudContents({
         contents: contents,
         setContents: setContents,
@@ -82,7 +82,7 @@ const FridgeContent: React.FC = () => {
                                     daysLeft={calculateDaysLeft}
                                     propertyVariables={outputProgressBarProperty}
                                     handleOpenUpdateForm={() => handleOpenUpdateForm(handleSetTargetContent, content)}
-                                    handleDelete={handleCloseDeleteModal}
+                                    handleDelete={() => handleOpenDeleteModal(handleSetTargetContent, content)}
                                 />
                             </Grid2>
                         ))}
@@ -106,6 +106,7 @@ const FridgeContent: React.FC = () => {
                         errors={errors}
                         onSubmit={onSubmitCreateForm}
                         handleClose={() => handleCloseCreateForm(reset)}
+                        title="追加"
                     />
                 </Box>
             </Modal>
@@ -121,7 +122,8 @@ const FridgeContent: React.FC = () => {
                         control={control}
                         errors={errors}
                         onSubmit={onSubmitUpdateForm}
-                        handleClose={() => handleCloseUpdateForm(reset)}    
+                        handleClose={() => handleCloseUpdateForm(reset)}
+                        title="更新"    
                     />
                 </Box>
             </Modal>
@@ -133,12 +135,14 @@ const FridgeContent: React.FC = () => {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style.createFormModal}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        削除モーダル
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                    </Typography>
+                    <CRUDFridgeContentsForm 
+                            control={control}
+                            errors={errors}
+                            onSubmit={onSubmitDelete}
+                            handleClose={() => handleCloseDeleteModal(reset)}
+                            title="削除"
+                            disabled={true}  
+                    />
                 </Box>
             </Modal>
             

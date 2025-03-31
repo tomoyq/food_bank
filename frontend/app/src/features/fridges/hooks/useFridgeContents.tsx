@@ -37,7 +37,7 @@ export const useFridgeContents = (props: Props) => {
         if (props.loggedIn) {
             fetchFridgeContents()
         };
-    }, [props.loggedIn, contents]);
+    }, [props.loggedIn]);
 
     //賞味期限まであと何日か計算
     const calculateDaysLeft = useCallback((expiryDate: string) => {
