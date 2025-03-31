@@ -22,6 +22,8 @@ type FormProps = {
     aria?: string;
     //fieldに表示するエラーをuseFormからもらう
     fieldError?: FieldError;
+    //入力を受け付けない時にもらう
+    disabled?: boolean;
 };
 
 const style = {
@@ -123,6 +125,7 @@ const CustomInput = (props: FormProps) => {
                         placeholder={props.placeholder}
                         aria-labelledby={props.aria}
                         defaultValue={props.value}
+                        disabled={props.disabled}
                         autoFocus
                         fullWidth
                         variant="outlined"

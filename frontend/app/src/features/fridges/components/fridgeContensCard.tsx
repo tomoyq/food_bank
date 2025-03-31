@@ -26,7 +26,7 @@ type FridgeContentsCard = {
     daysLeft: (expiryDate: string) => number;
     propertyVariables: (daysLeft: number) => any;
     handleOpenUpdateForm: (func?: (content?: FridgeItem) => Promise<void>, ) => void;
-    handleDelete: () => void;
+    handleDelete: (func?: (content?: FridgeItem) => Promise<void>, ) => void;
 };
 
 const style = {
@@ -50,7 +50,7 @@ const FridgeContentsCard:React.FC<FridgeContentsCard> = (props) => {
                     <CustomIconButton type='menu' onClick={() => props.handleOpenUpdateForm()}>
                         <EditNoteOutlinedIcon />
                     </CustomIconButton>
-                    <CustomIconButton type='menu' onClick={props.handleDelete}>
+                    <CustomIconButton type='menu' onClick={() => props.handleDelete()}>
                         <DeleteForeverOutlinedIcon />
                     </CustomIconButton>
                 </>
