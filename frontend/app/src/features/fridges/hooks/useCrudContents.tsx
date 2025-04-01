@@ -18,6 +18,7 @@ type Props = {
   setContents: React.Dispatch<React.SetStateAction<FridgeItem[]>>,
   handleCloseCreateForm: (func: () => void) => void;
   handleCloseUpdateForm: (func: () => void) => void;
+  handleCloseDeleteForm: (func: () => void) => void;
 }
 
 //フォーム送信後レスポンスの値でcontentsを更新させるためstateの更新関数をもらう
@@ -101,34 +102,25 @@ export const useCrudContents = (props: Props) => {
   }), [targetIndex]);
 
   //削除モーダルを送信
-  const onSubmitDelete = useCallback( handleSubmit( async (data: CRUDFridgeContentsFormData) => {
-    // //apiにデータを送信
-    // await customAxios.put(`/fridges/${targetIndex}/`, data=data)
-    // //更新成功の時はレスポンスをcontentsに入れる
-    // .then(res => {
-    //     console.log(res);
-    //     //resに更新された食材のみがあるためtargetIndexを使ってcontentsの配列から対象のデータだけを更新する
-    //     props.setContents(props.contents.map(content => {
-    //       //contentの中のidがtargetIndexと同じときは対象のデータなのでres.dataで上書きする
-    //       if (content.id === targetIndex) {
-    //         return res.data;
-    //       } else {
-    //         return content;
-    //       };
-    //     }));
+  const onSubmitDelete = useCallback( async (event: MouseEvent) => {
+    //再レンダリングを防ぐ
+    event.preventDefault()
+    
+    await customAxios.delete(`/fridges/${targetIndex}/`)
+    //更新成功の時はcontentsの中のidがtargetIDと一緒のものを削除する
+    .then(res => {
+        props.setContents(props.contents.filter(content => content.id !== targetIndex));
+        //targetIndexをnullに戻す
+        setTargetIndex(null);
+        //フォームの値を削除してmodalを閉じる
+        props.handleCloseDeleteForm(reset);
+    })
+    //エラーが返った場合アラートを表示したい（未実装）
+    .catch((error) => {
+        console.log(error);
+    });
 
-    //     //targetIndexをnullに戻す
-    //     setTargetIndex(null);
-    //     //フォームの値を削除してmodalを閉じる
-    //     props.handleCloseUpdateForm(reset);
-    // })
-    // //エラーが返った場合エラーメッセージをuseFormのsetErrorで入れる 
-    // .catch((error) => {
-    //     setError('root.serverError', {type: 'serverError', message: error.response.data.expiry_date[0]});
-    // });
-    console.log(targetIndex)
-
-  }), [targetIndex]);
+  }, [targetIndex]);
 
   return {control, errors, reset, handleSetTargetContent, onSubmitCreateForm, onSubmitUpdateForm, onSubmitDelete};
 };

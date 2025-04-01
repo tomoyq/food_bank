@@ -58,7 +58,8 @@ const FridgeContent: React.FC = () => {
         contents: contents,
         setContents: setContents,
         handleCloseCreateForm: handleCloseCreateForm,
-        handleCloseUpdateForm: handleCloseUpdateForm
+        handleCloseUpdateForm: handleCloseUpdateForm,
+        handleCloseDeleteForm: handleCloseDeleteModal
     });
 
     return (
