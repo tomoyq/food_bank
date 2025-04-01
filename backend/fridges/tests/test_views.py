@@ -147,3 +147,27 @@ class UpdateDestroyFridgeContentViewTests(APITestCase):
         #更新が成功した場合、個数は5になっているはず
         self.assertEqual(res.data['quantity'], 5)
         self.assertEqual(Fridges.objects.get(pk=1).quantity, 5)
+
+    #deleteリクエストがきたら削除される
+    def test_delete_api(self):
+        #削除apiをたたく前の在庫数は2つのはず
+        self.assertEqual(len(Fridges.objects.all()), 2)
+
+        res = self.client.delete(reverse('update_or_delete_fridge_contents', args=[1],))
+
+        #削除apiをたたいて処理が正常に行われると在庫数は1つになっている
+        self.assertEqual(res.status_code, 204)
+        self.assertEqual(len(Fridges.objects.all()), 1)
+
+        #idが1の在庫を削除したため残っている食材の名前は魚になっているはず
+        self.assertEqual(Fridges.objects.all()[0].name, '魚')
+
+    #存在しない在庫idでapiをたたく
+    def test_no_content_delete_api(self):
+        #idが5の在庫はない
+        res = self.client.delete(reverse('update_or_delete_fridge_contents', args=[5],))
+
+        #responseのstatus_codeは404になるはず
+        self.assertEqual(res.status_code, 404)
+        #responseのdetailに入っているエラーメッセージは日本語で一致しているはず
+        self.assertIn('対象の在庫食材が見つかりませんでした。', res.content.decode())
