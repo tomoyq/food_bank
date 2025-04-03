@@ -12,6 +12,33 @@ from rest_framework.permissions import AllowAny
 access_time = SIMPLE_JWT['ACCESS_TOKEN_LIFETIME']
 refresh_time = SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']
 
+#アクセスキーとリフレッシュキーをcookieに保存
+#アクセスキーとリフレッシュキーの有効期限を秒数で受け取る(渡されなければNoneになり、session cookieにする)
+def set_token_in_cookie(response: Response, serializer, access_time: int | None =None, refresh_time: int | None =None):
+     #cookieの有効期限はtokenの期限と同じ
+    access = serializer.validated_data['access']
+    refresh = serializer.validated_data['refresh']
+
+    response.set_cookie(key='access',
+                        value=access,
+                        max_age=access_time,
+                        httponly=True,
+                        path='/',
+                        secure=True,
+                        samesite='none'
+                        )
+    response.set_cookie(key='refresh',
+                        value=refresh,
+                        max_age=refresh_time,
+                        httponly=True,
+                        path='/',
+                        secure=True,
+                        samesite='none'
+                        )
+    
+    return response
+
+
 #tokenの有効確認
 class CustomTokenRefreshView(generics.GenericAPIView):
     permission_classes = [AllowAny]
@@ -67,31 +94,15 @@ class LoginView(TokenObtainPairView):
         except TokenError as e:
             raise InvalidToken(e.args[0])
 
-        response = Response(status=status.HTTP_200_OK)
+        res = Response(status=status.HTTP_200_OK)
 
-        #アクセスキーとリフレッシュキーをcookieに保存
-        #cookieの有効期限はtokenの期限と同じ
-        access = serializer.validated_data['access']
-        refresh = serializer.validated_data['refresh']
+        #dataの中のisRemenberがtrueの時は有効期限を設定してトークンをクッキーにセット
+        if request.data['isRemenber'] == True:
+            return set_token_in_cookie(res, serializer, access_time.total_seconds(), refresh_time.total_seconds())
+        #falseの場合は有効期限は渡さずにsession cookieとしてトークンをセットする
+        else:
+            return set_token_in_cookie(res, serializer)
 
-        response.set_cookie(key='access',
-                            value=access,
-                            max_age=access_time.total_seconds(),
-                            httponly=True,
-                            path='/',
-                            secure=True,
-                            samesite='none'
-                            )
-        response.set_cookie(key='refresh',
-                            value=refresh,
-                            max_age=refresh_time.total_seconds(),
-                            httponly=True,
-                            path='/',
-                            secure=True,
-                            samesite='none'
-                            )
-
-        return response
     
 class LogoutView(generics.GenericAPIView):
 

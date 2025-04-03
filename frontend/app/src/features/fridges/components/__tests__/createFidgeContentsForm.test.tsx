@@ -35,7 +35,8 @@ describe('在庫追加フォーム', () => {
             contents: [],
             setContents: jest.fn(),
             handleCloseCreateForm: () => ('close'),
-            handleCloseUpdateForm: () => ('close')
+            handleCloseUpdateForm: () => ('close'),
+            handleCloseDeleteForm: () => ('close'),
         }));                                                        
 
         await act(async () => {
@@ -44,6 +45,7 @@ describe('在庫追加フォーム', () => {
                 errors={result.current.errors}
                 onSubmit={result.current.onSubmitCreateForm}
                 handleClose={() => console.log('close')}
+                title='追加'
             />);
         })
         

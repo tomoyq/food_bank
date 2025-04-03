@@ -10,7 +10,7 @@ class LoginViewTests(APITestCase):
 
     #statusが200の時はcookieにaccessキー
     def test_login(self):
-        res = self.client.post(reverse('token_obtain_pair'), data={'username': 'test', 'password': 'test'})
+        res = self.client.post(reverse('token_obtain_pair'), data={'username': 'test', 'password': 'test', 'isRemenber': False})
         
         self.assertEqual(res.status_code, 200)
         self.assertTrue('access' in res.cookies.keys())

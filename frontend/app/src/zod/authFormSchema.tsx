@@ -9,7 +9,8 @@ export const SignInFormSchema = z.object({
         .regex(usernameRegex, {message: "使えるのは,文字,数字,_ のみです。"}),
     password: z.string({required_error: "必須項目です。"})
         .min(8, {message: "パスワードは8文字以上入力してください。"})
-        .regex(passwordRegex, {message: "使えるのは大文字か小文字のアルファベットと数字のみです。"})
+        .regex(passwordRegex, {message: "使えるのは大文字か小文字のアルファベットと数字のみです。"}),
+    isRemenber: z.boolean()
 });
 
 export type SignInFormData = z.infer<typeof SignInFormSchema>;

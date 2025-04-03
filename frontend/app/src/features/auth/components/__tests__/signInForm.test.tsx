@@ -1,11 +1,13 @@
 import '@testing-library/jest-dom'
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, renderHook } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
 import userEvent from '@testing-library/user-event';
 
 import { SignInForm } from "../signInForm";
 import { AuthContextProvider } from "../../../../app/context/AuthContext"
 import { customAxios } from '../../../../app/axios/AxiosProvider';
+import { useSignInForm } from '../../hooks/useSignInForm';
+import { act } from 'react';
 
 const errorResponce = {
     detail: 'サーバーエラーです'
@@ -24,16 +26,23 @@ describe('ログインフォーム', () => {
         jest.clearAllMocks();
     });
 
-    const setUp = () => {
-        render(<SignInForm />, {wrapper: AuthContextProvider});
+    const setUp = async () => {
+        const { result } = renderHook(() => useSignInForm(true, jest.fn()))
+
+        render(<SignInForm 
+            control={result.current.control}
+            errors={result.current.errors}
+            onSubmit={result.current.onSubmit}
+        />, {wrapper: AuthContextProvider});
+
         const usernameInput = screen.getByRole('textbox',{name:'username'}) as HTMLElement;
         const passwordInput = screen.getByLabelText('password') as HTMLElement;
         const submitButton = screen.getByRole('button',{name:'submit'});
-        return { usernameInput, passwordInput, submitButton };
+        return { usernameInput, passwordInput, submitButton, result };
     }
 
-    test('各要素が正しく読み込まれる', () => {
-        const { usernameInput, passwordInput, submitButton } = setUp();
+    test('各要素が正しく読み込まれる', async () => {
+        const { usernameInput, passwordInput, submitButton } = await setUp();
         expect(usernameInput).toBeInTheDocument();
         expect(usernameInput).toHaveValue('');
         expect(passwordInput).toBeInTheDocument();
@@ -42,7 +51,7 @@ describe('ログインフォーム', () => {
     });
 
     test('空のフィールドでフォームを送信した場合にバリデーションエラーが表示される', async () => {
-        const { submitButton } = setUp();
+        const { submitButton } = await setUp();
         userEvent.click(submitButton);
         await waitFor(() => {
             const requiredElement = screen.getAllByText('必須項目です。');
@@ -52,7 +61,7 @@ describe('ログインフォーム', () => {
     });
     
     test('文字数が足りないパスワードを入力した時にバリデーションエラーが表示される', async () => {
-        const { passwordInput } = setUp();
+        const { passwordInput } = await setUp();
         fireEvent.change(passwordInput, { target: { value: 'pass' } });
         fireEvent.blur(passwordInput);
         await waitFor(() => {
@@ -61,7 +70,7 @@ describe('ログインフォーム', () => {
     });
 
     test('無効なパスワードを入力した時にバリデーションエラーが表示される', async () => {
-        const { passwordInput } = setUp();
+        const { passwordInput } = await setUp();
         fireEvent.change(passwordInput, { target: { value: 'pass-word' } });
         fireEvent.blur(passwordInput);
         await waitFor(() => {
@@ -70,7 +79,7 @@ describe('ログインフォーム', () => {
     });
 
     test('無効なユーザー名を入力した時にバリデーションエラーが表示される', async () => {
-        const { usernameInput } = setUp();
+        const { usernameInput } = await setUp();
         fireEvent.change(usernameInput, { target: { value: 'test@' } });
         fireEvent.blur(usernameInput);
         await waitFor(() => {
@@ -82,17 +91,21 @@ describe('ログインフォーム', () => {
         const errorMock = new MockAdapter(customAxios);
         errorMock.onPost(`/login/`).reply(401, errorResponce);
 
-        const { usernameInput, passwordInput, submitButton } = setUp();
-        fireEvent.change(usernameInput, { target: { value: 'test' } });
-        fireEvent.blur(usernameInput);
+        const { usernameInput, passwordInput, result } = await setUp();
 
-        fireEvent.change(passwordInput, { target: { value: 'password' } });
-        fireEvent.blur(passwordInput); 
+        await act(async () => {
+            fireEvent.change(usernameInput, { target: { value: 'test' } });
+            fireEvent.blur(usernameInput);
 
-        userEvent.click(submitButton);
+            fireEvent.change(passwordInput, { target: { value: 'password' } });
+            fireEvent.blur(passwordInput); 
 
+            await result.current.onSubmit();
+        })
+        
+        //errorsにレスポンスのエラーメッセージが入っているはず
         await waitFor(() => {
-            expect(screen.getByText('サーバーエラーです')).toBeInTheDocument();
+            expect(result.current.errors.root?.serverError.message).toBe('サーバーエラーです');
         });
     });
 
@@ -100,7 +113,7 @@ describe('ログインフォーム', () => {
         const successMock = new MockAdapter(customAxios);
         successMock.onPost(`/login/`).reply(200);
 
-        const { usernameInput, passwordInput, submitButton } = setUp();
+        const { usernameInput, passwordInput, submitButton } = await setUp();
         fireEvent.change(usernameInput, { target: { value: 'test' } });
         fireEvent.blur(usernameInput);
 
