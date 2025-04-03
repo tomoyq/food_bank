@@ -4,13 +4,15 @@ import {
 } from '@mui/material'
 import { FieldPath, Control, useController } from 'react-hook-form';
 
-import { SignInFormData } from '../../../zod/authFormSchema';
-
 type FormProps = {
-    name: FieldPath<SignInFormData>;
-    control: Control<SignInFormData>;
+    name: FieldPath<any>;
+    control: Control<any>;
     helperText?: string;
     placeholder: string;
+}
+
+const style = {
+    fontWeight: 'bold',
 }
 
 export const RHFInput = (props: FormProps) => {
@@ -22,17 +24,14 @@ export const RHFInput = (props: FormProps) => {
         control: props.control,
       });
 
-    const errorMessage = errors?.[props.name]?.message
+    const errorMessage = errors?.[props.name]?.message as string
 
 
     return (
         <>
-            <FormLabel
-                htmlFor={field.name}
-                sx={{
-                    fontWeight: 'bold',
-                }}
-            >{field.name}</FormLabel>
+            <FormLabel htmlFor={field.name} sx={style}>
+                {field.name}
+            </FormLabel>
             <TextField
                 {...field}
                 error={errorMessage? true : false}

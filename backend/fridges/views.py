@@ -4,8 +4,9 @@ from rest_framework import status
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 
-from .serializers import FridgeContentsSerializer
 from .models import Fridges
+from .utils import custom_exception_handler
+from .serializers import FridgeContentsSerializer
 
 User = get_user_model()
 
@@ -47,6 +48,10 @@ class UpdateDestroyFridgeContentView(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return get_queryset_custom(self)
+    
+    #対象の在庫が見つからなかった時のエラーメッセージを変更
+    def get_exception_handler(self):
+        return custom_exception_handler
     
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)

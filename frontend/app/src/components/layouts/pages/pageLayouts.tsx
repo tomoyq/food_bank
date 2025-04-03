@@ -6,7 +6,7 @@ type Props = {
 
 const style = {
     width: 'auto',
-    height: '100%',
+    height: 'calc(100vh - 90px)',
     border: 1,
     borderColor: 'secondary.light',
     borderRadius: 2,

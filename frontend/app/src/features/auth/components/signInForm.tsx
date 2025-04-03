@@ -7,96 +7,106 @@ import {
   Typography,
 } from '@mui/material';
 import KitchenOutlinedIcon from '@mui/icons-material/KitchenOutlined';
-import styled from '@emotion/styled'
-import { useContext } from 'react';
+import { Control, FieldErrors, SubmitHandler } from 'react-hook-form';
 
 import { RHFInput } from './RHFInput';
-import { useSignInForm } from '../hooks/useSignInForm';
-import { AuthContext } from '../../../app/context/AuthContext';
 
-import { CustomButton } from '../../../components/ui';
+import { CustomButton, CustomCheckbox } from '../../../components/ui';
 
-const FormContainer = styled.div`
-  width: 25%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #FFFFFF;
-  border: solid 1px #DDDDDD;
-  border-radius: 20px;
-  padding: 50px;
-  gap: 2px;
-  boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-`
+type Props = {
+  control: Control<any>;
+  errors: FieldErrors<{
+    username: string;
+    password: string;
+    isRemenber: boolean;
+  }>
+  onSubmit: SubmitHandler<any>;
+};
 
-const ContainerLabel = styled.div`
-  width: full;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0;
-`
+const style = {
+  titleLayout: {
+    width: 'full',
+    display: 'flex',
+    flexFlow: 'column',
+    alignItems: 'center',
+    gap: '10px',
+    margin: '20px 0',
+  },
+  titleIcon: {
+    fontSize: 50,
+  },
+  title: {
+    fontSize: 'clamp(2rem, 10vw, 2.15rem)'
+  },
+  formLayout: {
+    width: {xs: '80%', md: '25%'},
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: '#FFFFFF',
+    border: 'solid 1px #DDDDDD',
+    borderRadius: '20px',
+    padding: '50px',
+    gap: '2px',
+    boxShadow:
+      'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
+  },
+  formContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    gap: 2,
+  },
+}
 
-export const SignInForm = () => {
-  const {loggedIn, setLoggedIn} = useContext(AuthContext);
-  
-  const {control, handleSubmit, errors, onSubmit} = useSignInForm(loggedIn, setLoggedIn);
-
+export const SignInForm = (props: Props) => {
   return (
     <>
-      <FormContainer >
-        <ContainerLabel>
+      <Box sx={style.formLayout}>
+        <Box sx={style.titleLayout}>
           <KitchenOutlinedIcon 
             color='primary'
-            sx={{
-              fontSize: 50,
-            }}
+            sx={style.titleIcon}
           />
           <Typography
             component="p"
             variant="inherit"
-            sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+            sx={style.title}
           >
             Welcome back to <br/>
             Smart Fridge Chef
           </Typography>
-          {errors.root?.serverError &&
+          {props.errors.root?.serverError &&
             <Typography
               component="p"
               variant="inherit"
               color='error'
             >
-              {errors.root?.serverError.message}
+              {props.errors.root?.serverError.message}
             </Typography>
           }
-        </ContainerLabel>
+        </Box>
         <Box
           component="form"
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={props.onSubmit}
           noValidate
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            gap: 2,
-          }}
+          sx={style.formContent}
         >
           <RHFInput 
             name='username'
-            control={control}
+            control={props.control}
             placeholder='ユーザー名'
           />
           <RHFInput 
             name='password'
-            control={control}
+            control={props.control}
             placeholder='••••••'
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+          <CustomCheckbox 
+            name='isRemenber'
+            control={props.control}
+            value='remenber'
           />
           <CustomButton
             text="Sign in"
@@ -104,7 +114,7 @@ export const SignInForm = () => {
             variant="contained"
           />
         </Box>
-        <ContainerLabel>
+        <Box sx={style.titleLayout}>
           <Link
             component="button"
             type="button"
@@ -123,8 +133,8 @@ export const SignInForm = () => {
               Sign up
             </Link>
           </Typography>
-        </ContainerLabel>
-      </FormContainer>
+        </Box>
+      </Box>
     </>
   );
 }
