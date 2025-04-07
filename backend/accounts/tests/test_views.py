@@ -6,7 +6,7 @@ User = get_user_model()
 
 class LoginViewTests(APITestCase):
     def setUp(self):
-        User.objects.create_user(username='test', password='test')
+        User.objects.create_user(username='test', email=None, password='test')
 
     #statusが200の時はcookieにaccessキー
     def test_login(self):

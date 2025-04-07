@@ -10,29 +10,30 @@ from django.utils.translation import gettext_lazy as _
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def _create_user_object(self, username, password, **extra_fields):
+    def _create_user_object(self, username, email, password, **extra_fields):
         if not username:
             raise ValueError("ユーザーネームを入力してください")
 
+        email = self.normalize_email(email)
         GlobalUserModel = apps.get_model(
             self.model._meta.app_label, self.model._meta.object_name
         )
         username = GlobalUserModel.normalize_username(username)
-        user = self.model(username=username, **extra_fields)
+        user = self.model(username=username, email=email, **extra_fields)
         user.password = make_password(password)
         return user
 
-    def _create_user(self, username, password, **extra_fields):
-        user = self._create_user_object(username, password, **extra_fields)
+    def _create_user(self, username, email, password, **extra_fields):
+        user = self._create_user_object(username, email, password, **extra_fields)
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, password=None, **extra_fields):
+    def create_user(self, username, email=None, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
-        return self._create_user(username, password, **extra_fields)
+        return self._create_user(username, email, password, **extra_fields)
     
-    def create_superuser(self, username, password=None, **extra_fields):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -41,7 +42,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self._create_user(username, password, **extra_fields)
+        return self._create_user(username, email, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
     SHARE_STATUS = (
@@ -64,6 +65,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "unique": _("A user with that username already exists."),
         },
     )
+    email = models.EmailField(_("email address"), blank=True)
     share_status = models.IntegerField(choices=SHARE_STATUS, default=0, verbose_name='共有状態')
     is_staff = models.BooleanField(
         _("staff status"),

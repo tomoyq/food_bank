@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 
 import { FridgeContent, Message, Profile, Recipe } from "./routes/app/index";
-import { Login } from "./routes/auth/login"
+import { Login, SignUp } from "./routes/auth"
 import { Layout } from "../components/layouts/Layout"
 
 export const AppRouter = () => {
@@ -15,6 +15,7 @@ export const AppRouter = () => {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/message" element={<Message />} />
                 </Route>
+                <Route path="/signup" element={<SignUp />} />
                 <Route path="/login" element={<Login />} />
             </Routes>
         </BrowserRouter>

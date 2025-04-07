@@ -1,13 +1,12 @@
 import {
   Box,
-  Checkbox,
-  FormControlLabel,
+  Link as MUILink,
   Divider,
-  Link,
   Typography,
 } from '@mui/material';
 import KitchenOutlinedIcon from '@mui/icons-material/KitchenOutlined';
 import { Control, FieldErrors, SubmitHandler } from 'react-hook-form';
+import { Link } from "react-router";
 
 import { RHFInput } from './RHFInput';
 
@@ -62,8 +61,7 @@ const style = {
 
 export const SignInForm = (props: Props) => {
   return (
-    <>
-      <Box sx={style.formLayout}>
+      <Box className='MuiBox-root' sx={style.formLayout}>
         <Box sx={style.titleLayout}>
           <KitchenOutlinedIcon 
             color='primary'
@@ -115,26 +113,24 @@ export const SignInForm = (props: Props) => {
           />
         </Box>
         <Box sx={style.titleLayout}>
-          <Link
+          <MUILink
             component="button"
             type="button"
             onClick={() => {}}
             variant="body2"
           >
             Forgot your password?
-          </Link>
+          </MUILink>
           <Divider flexItem>or</Divider>
           <Typography >
             Don&apos;t have an account?{' '}
             <Link
-              href="/material-ui/getting-started/templates/sign-in/"
-              variant="body2"
+              to="/signup"
             >
               Sign up
             </Link>
           </Typography>
         </Box>
       </Box>
-    </>
   );
 }

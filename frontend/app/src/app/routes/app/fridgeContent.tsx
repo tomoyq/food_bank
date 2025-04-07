@@ -106,7 +106,7 @@ const FridgeContent: React.FC = () => {
                     <CustomButton 
                         variant="contained"
                         text="サインアップ"
-                        onClick={() => console.log('サインアップ')}
+                        onClick={() => navigate('/signup')}
                     />
                 </Box>
             </Box>
