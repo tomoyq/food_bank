@@ -10,7 +10,7 @@ User = get_user_model()
 
 class FridgeContentsSerializerTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create(username='test', password='test')
+        self.user = User.objects.create(username='test', email='test@gmail.com', password='test')
         self.model_instance = Fridges.objects.create(owner=self.user,
                                                      name='肉',
                                                      expiry_date=datetime.date.today() + datetime.timedelta(days=1),

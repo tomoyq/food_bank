@@ -13,7 +13,7 @@ class FridgeContentListViewTests(APITestCase):
     def setUp(self):
         User.objects.all().delete()
         Fridges.objects.all().delete()
-        self.user = User.objects._create_user(username='test', password='test')
+        self.user = User.objects._create_user(username='test', email=None, password='test')
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
         #test_requetの作成
@@ -104,7 +104,7 @@ class UpdateDestroyFridgeContentViewTests(APITestCase):
     def setUp(self):
         User.objects.all().delete()
         Fridges.objects.all().delete()
-        self.user = User.objects._create_user(username='test', password='test')
+        self.user = User.objects._create_user(username='test', email=None, password='test')
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
         #test_requetの作成

@@ -2,8 +2,8 @@ import React, { useContext } from "react"
 import { Box } from '@mui/material';
 
 import { SignInForm } from "../../../features/auth/components/signInForm";
-import { AuthContext } from "../../../app/context/AuthContext";
-import { useSignInForm } from "../../../features/auth/hooks/useSignInForm";
+import { SignInFormSchema } from "../../../zod/authFormSchema";
+import { useAuthForm } from "../../../features/auth/hooks/useAuthForm";
 
 const style = {
     width: 'full',
@@ -11,11 +11,8 @@ const style = {
     background: 'linear-gradient(to bottom,rgba(59, 130, 246, 0.2), #ffffff)',
 }
 
-export const Login: React.FC = () => {
-    //ログイン状態を取得
-    const {loggedIn, setLoggedIn} = useContext(AuthContext);
-      
-    const {control, errors, onSubmit} = useSignInForm(loggedIn, setLoggedIn);
+const Login: React.FC = () => {
+    const {control, errors, onSubmit} = useAuthForm(SignInFormSchema);
 
     return (
         <Box sx={style}>
@@ -27,3 +24,5 @@ export const Login: React.FC = () => {
         </Box>
     ) 
 };
+
+export default Login
