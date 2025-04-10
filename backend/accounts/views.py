@@ -5,7 +5,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
-from .serializers import CustomTokenObtainPairSerializer
+from .serializers import CustomTokenObtainPairSerializer, CreateUserSerializer
 from api.settings import SIMPLE_JWT
 from rest_framework.permissions import AllowAny
 
@@ -37,6 +37,16 @@ def set_token_in_cookie(response: Response, serializer, access_time: int | None 
                         )
     
     return response
+
+def create_custom_response(request, serializer):
+    res = Response(status=status.HTTP_200_OK)
+
+    #dataの中のisRemenberがtrueの時は有効期限を設定してトークンをクッキーにセット
+    if request.data['isRemenber'] == True:
+        return set_token_in_cookie(res, serializer, access_time.total_seconds(), refresh_time.total_seconds())
+    #falseの場合は有効期限は渡さずにsession cookieとしてトークンをセットする
+    else:
+        return set_token_in_cookie(res, serializer)
 
 
 #tokenの有効確認
@@ -82,6 +92,20 @@ class CustomTokenRefreshView(generics.GenericAPIView):
                             )
         
         return response
+    
+class SignUpView(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = CreateUserSerializer
+
+    def post(self, request, *args, **kwargs):
+        #送信されたデータをデシリアライズ
+        serializer = self.get_serializer(data=request.data)
+
+        #バリデーションに失敗したらエラーを返す
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return create_custom_response(request, serializer)
 
 class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
@@ -94,14 +118,7 @@ class LoginView(TokenObtainPairView):
         except TokenError as e:
             raise InvalidToken(e.args[0])
 
-        res = Response(status=status.HTTP_200_OK)
-
-        #dataの中のisRemenberがtrueの時は有効期限を設定してトークンをクッキーにセット
-        if request.data['isRemenber'] == True:
-            return set_token_in_cookie(res, serializer, access_time.total_seconds(), refresh_time.total_seconds())
-        #falseの場合は有効期限は渡さずにsession cookieとしてトークンをセットする
-        else:
-            return set_token_in_cookie(res, serializer)
+        return create_custom_response(request, serializer)
 
     
 class LogoutView(generics.GenericAPIView):
