@@ -20,8 +20,10 @@ export const SignUpFormSchema = z.object({
         .max(150, {message: "名前は150文字以内です。"})
         .regex(usernameRegex, {message: "使えるのは,文字,数字,_ のみです。"}),
 
+    //undefinedを許容
     email: z.string()
-        .email({message: "メールアドレスを入力してください。"}),
+        .email({message: "メールアドレスを入力してください。"})
+        .or(z.literal('')),
 
     password: z.string({required_error: "必須項目です。"})
         .min(8, {message: "パスワードは8文字以上入力してください。"})

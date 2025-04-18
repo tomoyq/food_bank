@@ -18,6 +18,12 @@ import { useNavigate } from "react-router";
 
 
 const style = {
+    notContentsMessage: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+    },
     notLoggedInPage: {
         position: 'absolute',
         top: '50%',
@@ -124,7 +130,7 @@ const FridgeContent: React.FC = () => {
                     onClick={() => handleOpenCreateForm()}
                 />
                 <Box sx={style.fridgeContents}>
-                    {contents !== null ?
+                    {contents.length !== 0 ?
                         <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                             {contents.map((content) => (
                                 <Grid2 key={content.id} size={{ xs: 6, sm: 4, md: 3 }}>
@@ -139,8 +145,9 @@ const FridgeContent: React.FC = () => {
                             ))}
                         </Grid2>
                     :
-                        <Typography gutterBottom variant="h4">
-                            在庫はありません。
+                        <Typography gutterBottom variant="h4" align="center" sx={style.notContentsMessage}>
+                            在庫はまだありません。<br></br>
+                            食材を追加してみましょう！
                         </Typography>  
                     }
                 </Box>
