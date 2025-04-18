@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
-import { z } from 'zod';
+import { string, z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import {SignInFormData, SignUpFormData, SignInFormSchema, SignUpFormSchema} from '../../../zod/authFormSchema';
@@ -29,13 +29,33 @@ export const useAuthForm = (formSchema: typeof SignUpFormSchema | typeof SignInF
         resolver: zodResolver(formSchema),
         criteriaMode: 'all',
         mode: 'onChange',
-        //isRemenberの初期値のみ設定(false)
+        //フォーカスが外れた場合に再検証させる
+        reValidateMode: 'onChange',
+        //isRemenberの初期値(false), emailは空文字
         defaultValues: {
+          email: '',
           isRemenber: false
         }
       });
 
     const navigate = useNavigate()
+
+    //setErrorの使いかたをsignupとloginとで分ける
+    const setServerError = (e: any, path: 'signup' | 'login') => {
+      if (path === 'login') {
+        //サーバーエラーの内容を表示させる
+        setError('root.serverError', {
+          type: 'serverError',
+          message: e.response.data.detail
+        })
+      } else {
+        //field nameと同じキー名でエラーメッセージがresponse.dataに入っているはず
+        //エラーメッセージが配列で取得できるためindexに0を指定
+        Object.keys(e.response.data).map(key => setError('root.serverError', {
+          type: 'serverError',
+          message: e.response.data[key][0]}))
+      }
+    }
     
     //pathにloginが入ればログインapi, signupが入ればサインアップapiをたたく
     const signUpOrLogin = useCallback(async (path: 'signup' | 'login', data: SignUpFormData | SignInFormData) => {
@@ -49,11 +69,7 @@ export const useAuthForm = (formSchema: typeof SignUpFormSchema | typeof SignInF
       .catch((e) => {
         console.log(e)
   
-        //サーバーエラーの内容を表示させる
-        setError('root.serverError', {
-          type: 'serverError',
-          message: e.response.data.detail
-        })
+        setServerError(e, path);
       })
     }, [formSchema]);
 
@@ -62,8 +78,7 @@ export const useAuthForm = (formSchema: typeof SignUpFormSchema | typeof SignInF
       console.log(data)
       //formSchemaにSignUpFormSchemaが渡された場合pathにsignup, SignInFormSchemaが渡された場合はloginを入れて関数実行
       if (formSchema === SignUpFormSchema) {
-        //await signUpOrLogin('signup', data);
-        console.log(`signup`);
+        await signUpOrLogin('signup', data);
       } else {
         await signUpOrLogin('login', data);
       };
