@@ -24,6 +24,7 @@ ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'fridges.apps.FridgesConfig',
+    'recipes.apps.RecipesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
