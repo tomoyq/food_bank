@@ -14,10 +14,11 @@ import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
 import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 
-import { useNavigate } from 'react-router';
+import { useActionData, useNavigate } from 'react-router';
 
 import { CustomIconButton } from "../../ui/"
 import { AuthContext } from "../../../app/context/AuthContext";
+import { useMenu } from '../../../hooks';
 
 type Pages = {
   name: string,
@@ -96,15 +97,7 @@ export const Header = () => {
     }
   };
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  const {anchorElNav, handleOpenNavMenu, handleCloseNavMenu} = useMenu()
 
   return (
     <AppBar position="sticky">

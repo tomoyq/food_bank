@@ -15,7 +15,7 @@ type FormProps = {
     placeholder: string;
     value?: any;
     //入力欄の名前
-    inputTag: string;
+    inputTag?: string;
     //セレクトボックスの中身
     enum?: string[];
     //テストでgetByLabelを使う場合に使用
